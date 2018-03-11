@@ -1,4 +1,4 @@
-package src.com.lucene_in_the_sky_with_diamonds;
+package com.lucene_in_the_sky_with_diamonds;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -38,10 +38,10 @@ import org.apache.lucene.search.similarities.LMDirichletSimilarity;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.RAMDirectory;
 
-import src.com.lucene_in_the_sky_with_diamonds.analysis.CustomAnalyzer;
-import src.com.lucene_in_the_sky_with_diamonds.document.CollectionLoader;
-import src.com.lucene_in_the_sky_with_diamonds.query.QueryFieldsObject;
-import src.com.lucene_in_the_sky_with_diamonds.query.QueryLoader;
+import com.lucene_in_the_sky_with_diamonds.analysis.CustomAnalyzer;
+import com.lucene_in_the_sky_with_diamonds.document.CollectionLoader;
+import com.lucene_in_the_sky_with_diamonds.query.QueryFieldsObject;
+import com.lucene_in_the_sky_with_diamonds.query.QueryLoader;
 
 public class Application {
 

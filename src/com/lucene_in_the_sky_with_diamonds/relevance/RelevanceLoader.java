@@ -1,4 +1,4 @@
-package src.com.lucene_in_the_sky_with_diamonds.relevance;
+package com.lucene_in_the_sky_with_diamonds.relevance;
 
 import java.io.BufferedReader;
 import java.io.FileReader;

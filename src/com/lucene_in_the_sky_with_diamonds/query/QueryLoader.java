@@ -1,11 +1,11 @@
-package src.com.lucene_in_the_sky_with_diamonds.query;
+package com.lucene_in_the_sky_with_diamonds.query;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.util.ArrayList;
 import java.util.List;
 
-import src.com.lucene_in_the_sky_with_diamonds.document.ValidDocumentTag;
+import com.lucene_in_the_sky_with_diamonds.document.ValidDocumentTag;
 
 public class QueryLoader {
 	private List<QueryFieldsObject> queryCollection;
