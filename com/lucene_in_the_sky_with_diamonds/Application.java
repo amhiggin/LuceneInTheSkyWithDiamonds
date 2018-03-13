@@ -3,38 +3,61 @@ package com.lucene_in_the_sky_with_diamonds;
 import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.List;
+
+import com.lucene_in_the_sky_with_diamonds.document.CollectionType;
+import com.lucene_in_the_sky_with_diamonds.document.ft.FTDocumentLoader;
 
 public class Application {
 
-	private static final String ITERATION_NUM = " 0 ";
-	private static final int TOP_X_RESULTS = 1000; // Upper limit in Trec-Eval
 	private static final String APPLICATION_PATH = Paths.get("").toAbsolutePath().toString();
 	private static final String FT_FILEPATH = String.format("%s/input_data/ft/", APPLICATION_PATH);
-	private static String queriesFileName = String.format("%s/cran/cran.qry", APPLICATION_PATH);
-	private static String relevancesInputFileName = String.format("%s/cran/cranqrel", APPLICATION_PATH);
-	private static String computedResultsFileName = null;
-	private static String trecEvalOutputFileName = null;
-	private static String scoringModel = null;
+	private static final String FBIS_FILEPATH = String.format("%s/input_data/fbis/", APPLICATION_PATH);
+	private static final String FR94_FILEPATH = String.format("%s/input_data/fr94/", APPLICATION_PATH);
+	private static final String LATIMES_FILEPATH = String.format("%s/input_data/latimes/", APPLICATION_PATH);
+
+	private static List<String> ftCollection;
+	private static List<String> fbisCollection;
+	private static List<String> latimesCollection;
+	private static List<String> fr94Collection;
 
 	public static void main(String[] args) {
 		try {
-			walkDirTree(FT_FILEPATH);
-
-			// FTDocumentLoader financialTimesDocumentLoader = new
-			// FTDocumentLoader(FT_FILEPATH);
-			// financialTimesDocumentLoader.loadDocumentsFromFile();
+			loadDocumentCollection(CollectionType.FT); // TODO allow this to be passed as args[0]
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
 
-	private static void walkDirTree(String rootFolder) throws Exception {
+	private static void loadDocumentCollection(CollectionType collection) throws Exception {
+		switch (collection) {
+		case FT:
+			ftCollection = walkDirTree(FT_FILEPATH);
+			for (String fileName : ftCollection) {
+				FTDocumentLoader financialTimesDocumentLoader = new FTDocumentLoader(fileName);
+				financialTimesDocumentLoader.loadDocumentsFromFile();
+			}
+		case FBIS:
+			walkDirTree(FBIS_FILEPATH);
+		case FR94:
+			walkDirTree(FR94_FILEPATH);
+		case LA:
+			walkDirTree(LATIMES_FILEPATH);
+		default:
+			break;
+		}
+	}
+
+	private static List<String> walkDirTree(String rootFolder) throws Exception {
+		List<String> collectionFilesToIndex = new ArrayList<String>();
 		Files.walk(Paths.get(rootFolder)).forEach(path -> {
 			File file = new File(path.toString());
 			if (file.isFile() && !file.getName().contains("read")) {
-				System.out.println(path);
+				collectionFilesToIndex.add(path.toString());
 			}
 		});
+		return collectionFilesToIndex;
 	}
 
 }

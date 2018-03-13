@@ -36,7 +36,7 @@ public class FTDocumentLoader {
 				ArrayList<String> cleanedData = clearEmptySections(sections);
 				print(String.format("%s", cleanedData.size()));
 				for (String datum : cleanedData) {
-					print(datum);
+					// print(datum);
 				}
 
 				Document doc = createDocument(cleanedData);
