@@ -1,4 +1,4 @@
-package src.com.lucene_in_the_sky_with_diamonds.document;
+package com.lucene_in_the_sky_with_diamonds.document;
 
 /*
  * Documents are a collection of fields. Each field is treated differently. This intermediary bean

@@ -1,4 +1,4 @@
-package src.com.lucene_in_the_sky_with_diamonds;
+package com.lucene_in_the_sky_with_diamonds;
 
 public class Constants {
 

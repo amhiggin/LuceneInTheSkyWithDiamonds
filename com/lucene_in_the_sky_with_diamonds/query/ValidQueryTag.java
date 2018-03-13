@@ -1,4 +1,4 @@
-package src.com.lucene_in_the_sky_with_diamonds.query;
+package com.lucene_in_the_sky_with_diamonds.query;
 
 public enum ValidQueryTag {
 
