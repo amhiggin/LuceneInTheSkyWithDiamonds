@@ -50,13 +50,16 @@ public class Application {
 					ftCollectionFilenames.size()));
 		case FBIS:
 			walkDirTree(FBIS_FILEPATH);
-			print("Foreign Broadcast Information Service documents loaded.");
+			print(String.format("%s Foreign Broadcast Information Service documents loaded, from %s filepaths.",
+					fbisCollectionDocuments.size(), fbisCollectionFilenames.size()));
 		case FR94:
 			walkDirTree(FR94_FILEPATH);
-			print("Federal Register documents loaded.");
+			print(String.format("%s Federal Register documents loaded, from %s filepaths.",
+					fr94CollectionDocuments.size(), fr94CollectionFilenames.size()));
 		case LA:
 			walkDirTree(LATIMES_FILEPATH);
-			print("Los Angeles Times documents loaded.");
+			print(String.format("%s Los Angeles Times documents loaded, from %s filepaths.",
+					latimesCollectionDocuments.size(), latimesCollectionFilenames.size()));
 		default:
 			break;
 		}

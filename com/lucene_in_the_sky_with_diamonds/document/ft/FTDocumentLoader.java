@@ -15,7 +15,6 @@ import org.apache.lucene.document.TextField;
 
 public class FTDocumentLoader {
 
-	private static final String EMPTY_STRING = "";
 	// private static final Set<String> documentTags = new
 	// HashSet<String>(Arrays.asList("<p>", "</p>", "<ABS>", "<AU>",
 	// "<DATE1>", "<H1>", "<HEADER>", "<HT>", "<TEXT>", "<TR>", "<BYLINE>",
@@ -34,9 +33,10 @@ public class FTDocumentLoader {
 		try (InputStream stream = Files.newInputStream(Paths.get(fileName))) {
 			BufferedReader br = new BufferedReader(new InputStreamReader(stream, StandardCharsets.UTF_8));
 			String line = null;
-			String docNO = null, docID = null, s;
-			StringBuilder sb = new StringBuilder();
-			boolean docFound = false, headlineFound = false, titleFound = false;
+			String docNO = null, docID = null;
+			StringBuilder headlineStringBuilder = new StringBuilder(), textStringBuilder = new StringBuilder();
+			;
+			boolean docFound = false, headlineFound = false, textFound = false;
 			ArrayList<String> sections = new ArrayList<String>();
 
 			while ((line = br.readLine()) != null) {
@@ -47,8 +47,8 @@ public class FTDocumentLoader {
 					docFound = true;
 					continue;
 				} else if (line.equals(FTFieldTypes.DOC_END.fieldType)) {
-					docFound = false;
 					// Save the document and reset the fields
+					docFound = false;
 					try {
 						getCollectionDocuments().add(createDocument(sections));
 					} catch (Exception e) {
@@ -60,19 +60,28 @@ public class FTDocumentLoader {
 					docNO = parseDocNO(line);
 					sections.add(docNO);
 				} else if (line.equals(FTFieldTypes.HEADLINE_START.fieldType)) {
-					// Go through the other lines of the document
 					headlineFound = true;
 					continue;
 				} else if (line.equals(FTFieldTypes.HEADLINE_END.fieldType)) {
 					headlineFound = false;
-					sections.add(sb.toString());
-					sb = new StringBuilder();
+					sections.add(headlineStringBuilder.toString());
+					headlineStringBuilder = new StringBuilder();
+					continue;
+				} else if (line.equals(FTFieldTypes.TEXT_START.fieldType)) {
+					textFound = true;
+					continue;
+				} else if (line.equals(FTFieldTypes.TEXT_END.fieldType)) {
+					textFound = false;
+					sections.add(textStringBuilder.toString());
+					textStringBuilder = new StringBuilder();
 					continue;
 				}
 
 				if (docFound == true) {
 					if (headlineFound == true) {
-						sb.append(line);
+						headlineStringBuilder.append(line);
+					} else if (textFound == true) {
+						textStringBuilder.append(line);
 					}
 				}
 			}
@@ -106,6 +115,7 @@ public class FTDocumentLoader {
 		Document document = new Document();
 		document.add(new TextField("DocNo", sections.get(0), Field.Store.YES));
 		document.add(new TextField("Headline", sections.get(1), Field.Store.YES));
+		document.add(new TextField("Text", sections.get(2), Field.Store.YES));
 
 		return document;
 	}
