@@ -6,6 +6,8 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.lucene.document.Document;
+
 import com.lucene_in_the_sky_with_diamonds.document.CollectionType;
 import com.lucene_in_the_sky_with_diamonds.document.ft.FTDocumentLoader;
 
@@ -17,10 +19,14 @@ public class Application {
 	private static final String FR94_FILEPATH = String.format("%s/input_data/fr94/", APPLICATION_PATH);
 	private static final String LATIMES_FILEPATH = String.format("%s/input_data/latimes/", APPLICATION_PATH);
 
-	private static List<String> ftCollection;
-	private static List<String> fbisCollection;
-	private static List<String> latimesCollection;
-	private static List<String> fr94Collection;
+	private static List<String> ftCollectionFilenames = new ArrayList<String>();
+	private static List<String> fbisCollectionFilenames = new ArrayList<String>();
+	private static List<String> latimesCollectionFilenames = new ArrayList<String>();
+	private static List<String> fr94CollectionFilenames = new ArrayList<String>();
+	private static List<Document> ftCollectionDocuments = new ArrayList<Document>();
+	private static List<Document> fbisCollectionDocuments = new ArrayList<Document>();
+	private static List<Document> latimesCollectionDocuments = new ArrayList<Document>();
+	private static List<Document> fr94CollectionDocuments = new ArrayList<Document>();
 
 	public static void main(String[] args) {
 		try {
@@ -33,17 +39,22 @@ public class Application {
 	private static void loadDocumentCollection(CollectionType collection) throws Exception {
 		switch (collection) {
 		case FT:
-			ftCollection = walkDirTree(FT_FILEPATH);
-			for (String fileName : ftCollection) {
-				FTDocumentLoader financialTimesDocumentLoader = new FTDocumentLoader(fileName);
-				financialTimesDocumentLoader.loadDocumentsFromFile();
+			ftCollectionFilenames = walkDirTree(FT_FILEPATH);
+			FTDocumentLoader financialTimesDocumentLoader = new FTDocumentLoader();
+			for (String fileName : ftCollectionFilenames) {
+				financialTimesDocumentLoader.loadDocumentsFromFile(fileName);
+				ftCollectionDocuments.addAll(financialTimesDocumentLoader.getCollectionDocuments());
 			}
+			print("Financial Times documents loaded.");
 		case FBIS:
 			walkDirTree(FBIS_FILEPATH);
+			print("Foreign Broadcast Information Service documents loaded.");
 		case FR94:
 			walkDirTree(FR94_FILEPATH);
+			print("Federal Register documents loaded.");
 		case LA:
 			walkDirTree(LATIMES_FILEPATH);
+			print("Los Angeles Times documents loaded.");
 		default:
 			break;
 		}
@@ -60,4 +71,7 @@ public class Application {
 		return collectionFilesToIndex;
 	}
 
+	private static void print(String message) {
+		System.out.println(message);
+	}
 }

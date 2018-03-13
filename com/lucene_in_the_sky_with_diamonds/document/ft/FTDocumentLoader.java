@@ -18,17 +18,15 @@ public class FTDocumentLoader {
 	private String topLevelRegex = "<DOCNO>|</DOCNO>|" + "<HEADLINE>|</HEADLINE>|" + "<TEXT>|</TEXT>|" + "</DOC>|"
 			+ "<DATE>|</DATE>|" + "<BYLINE>| </BYLINE>|" + "<PUB>|</PUB>|" + "";
 
-	private String fileName;
 	private List<Document> collectionDocuments;
 
-	public FTDocumentLoader(String fileName) {
-		this.fileName = fileName;
+	public FTDocumentLoader() {
 		this.collectionDocuments = new ArrayList<Document>();
 	}
 
-	public void loadDocumentsFromFile() {
+	public void loadDocumentsFromFile(String fileName) {
 		try {
-			Scanner scan = new Scanner(new File(this.fileName));
+			Scanner scan = new Scanner(new File(fileName));
 			scan.useDelimiter(Pattern.compile("<DOC>"));
 			while (scan.hasNext()) {
 
@@ -80,10 +78,6 @@ public class FTDocumentLoader {
 
 	public int getSizeOfCollection() {
 		return collectionDocuments.size();
-	}
-
-	public String getFileName() {
-		return fileName;
 	}
 
 	public List<Document> getCollectionDocuments() {
