@@ -40,6 +40,7 @@ import org.apache.lucene.store.RAMDirectory;
 
 import com.lucene_in_the_sky_with_diamonds.analysis.CustomAnalyzer;
 import com.lucene_in_the_sky_with_diamonds.document.CollectionLoader;
+import com.lucene_in_the_sky_with_diamonds.document.FBISLoader;
 import com.lucene_in_the_sky_with_diamonds.query.QueryFieldsObject;
 import com.lucene_in_the_sky_with_diamonds.query.QueryLoader;
 
@@ -56,23 +57,26 @@ public class Application {
 	private static String scoringModel = null;
 
 	public static void main(String[] args) {
-		try {
-			if (args.length != 2 || !validRankingModelSpecified(args[0]) || !validAnalyzerSpecified(args[1])) {
-				throw new RuntimeException(Constants.usageExceptionMessage(args));
-			} else {
-				setScoringModel(args[0]);
-				Analyzer analyzer = setAnalyzer(args[1]);
-				updateOutputFilePaths(args[0], args[1]);
-
-				Directory indexDirectory = new RAMDirectory();
-
-				indexDocumentCollection(indexDirectory, analyzer);
-				executeQueries(indexDirectory, analyzer);
-				evaluateResults(indexDirectory, analyzer);
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+	 
+		FBISLoader collectionLoader = new FBISLoader( "/home/jibin/Desktop/Assignment_Two/fbis/fb396001");
+		collectionLoader.loadDocumentsFromFile();
+//		try {
+//			if (args.length != 2 || !validRankingModelSpecified(args[0]) || !validAnalyzerSpecified(args[1])) {
+//				throw new RuntimeException(Constants.usageExceptionMessage(args));
+//			} else {
+//				setScoringModel(args[0]);
+//				Analyzer analyzer = setAnalyzer(args[1]);
+//				updateOutputFilePaths(args[0], args[1]);
+//
+//				Directory indexDirectory = new RAMDirectory();
+//
+//				indexDocumentCollection(indexDirectory, analyzer);
+//				executeQueries(indexDirectory, analyzer);
+//				evaluateResults(indexDirectory, analyzer);
+//			}
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//		}
 	}
 
 	private static void updateOutputFilePaths(String _scoringModel, String _analyzer) {
