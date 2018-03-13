@@ -45,7 +45,7 @@ public class Application {
 				financialTimesDocumentLoader.loadDocumentsFromFile(fileName);
 				ftCollectionDocuments.addAll(financialTimesDocumentLoader.getCollectionDocuments());
 			}
-			print("Financial Times documents loaded.");
+			print(String.format("%s Financial Times documents loaded.", ftCollectionDocuments.size()));
 		case FBIS:
 			walkDirTree(FBIS_FILEPATH);
 			print("Foreign Broadcast Information Service documents loaded.");

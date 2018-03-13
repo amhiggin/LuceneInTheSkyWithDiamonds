@@ -1,22 +1,27 @@
 package com.lucene_in_the_sky_with_diamonds.document.ft;
 
-import java.io.File;
+import java.io.BufferedReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Scanner;
-import java.util.regex.Pattern;
 
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
-import org.apache.lucene.document.StringField;
 import org.apache.lucene.document.TextField;
 
 public class FTDocumentLoader {
 
 	private static final String EMPTY_STRING = "";
-
-	private String topLevelRegex = "<DOCNO>|</DOCNO>|" + "<HEADLINE>|</HEADLINE>|" + "<TEXT>|</TEXT>|" + "</DOC>|"
-			+ "<DATE>|</DATE>|" + "<BYLINE>| </BYLINE>|" + "<PUB>|</PUB>|" + "";
+	// private static final Set<String> documentTags = new
+	// HashSet<String>(Arrays.asList("<p>", "</p>", "<ABS>", "<AU>",
+	// "<DATE1>", "<H1>", "<HEADER>", "<HT>", "<TEXT>", "<TR>", "<BYLINE>",
+	// "<CORRECTION>", "<CORRECTION-DATE>",
+	// "<DATE>", "<DATELINE>", "<GRAPHIC>", "<LENGTH>", "<SECTION>", "<SUBJECT>",
+	// "<TYPE>"));
 
 	private List<Document> collectionDocuments;
 
@@ -25,53 +30,72 @@ public class FTDocumentLoader {
 	}
 
 	public void loadDocumentsFromFile(String fileName) {
-		try {
-			Scanner scan = new Scanner(new File(fileName));
-			scan.useDelimiter(Pattern.compile("<DOC>"));
-			while (scan.hasNext()) {
 
-				String[] sections = scan.next().split(topLevelRegex);
-				ArrayList<String> cleanedData = clearEmptySections(sections);
-				print(String.format("%s", cleanedData.size()));
-				for (String datum : cleanedData) {
-					// print(datum);
+		try (InputStream stream = Files.newInputStream(Paths.get(fileName))) {
+			BufferedReader br = new BufferedReader(new InputStreamReader(stream, StandardCharsets.UTF_8));
+			String line = null;
+			String docNO = null, docID = null, s;
+			StringBuilder sb = new StringBuilder();
+			boolean docFound = false, headlineFound = false, titleFound = false;
+			ArrayList<String> sections = new ArrayList<String>();
+
+			while ((line = br.readLine()) != null) {
+				line = line.trim();
+
+				if (line.equals(FTFieldTypes.DOC_START.fieldType)) {
+					// We are at the start of the document: we keep going until we get to the end
+					docFound = true;
+					continue;
+				} else if (line.equals(FTFieldTypes.DOC_END.fieldType)) {
+					docFound = false;
+					// Save the document and reset the fields
+					try {
+						getCollectionDocuments().add(createDocument(sections));
+					} catch (Exception e) {
+						continue;
+					}
+					sections = new ArrayList<String>();
+					continue;
+				} else if (line.equals(FTFieldTypes.HEADLINE_START.fieldType)) {
+					// Go through the other lines of the document
+					headlineFound = true;
+					continue;
+				} else if (line.equals(FTFieldTypes.HEADLINE_END.fieldType)) {
+					headlineFound = false;
+					sections.add(sb.toString());
+					sb = new StringBuilder();
+					continue;
 				}
 
-				Document doc = createDocument(cleanedData);
-				this.collectionDocuments.add(doc);
-				break;
+				if (docFound == true) {
+					if (headlineFound == true) {
+						sb.append(line);
+					}
+				}
 			}
-			scan.close();
-
 		} catch (Exception e) {
-			System.out.println(String.format("An exception occurred when parsing the documents from %s", fileName));
 			e.printStackTrace();
 		}
 	}
 
-	private ArrayList<String> clearEmptySections(String[] sections) {
-		ArrayList<String> cleanedData = new ArrayList<String>();
-		for (String sec : sections) {
-			if (sec.trim().equals(EMPTY_STRING)) { // there might be a lot empty strings after regex splitting
-				;
-			} else {
-				cleanedData.add(sec.trim());
-			}
+	protected static String removeTags(String line) {
+		int beginIndex = line.indexOf('>');
+		int endIndex = line.lastIndexOf('<');
+		if (beginIndex == -1 || endIndex == -1 || beginIndex > endIndex) {
+			print(line);
+			return null;
 		}
-		return cleanedData;
-
+		return line.substring(beginIndex + 1, endIndex).trim();
 	}
 
-	private Document createDocument(ArrayList<String> sections) {
+	private Document createDocument(ArrayList<String> sections) throws Exception {
+		if (sections.isEmpty()) {
+			throw new Exception("Cannot add empty sections to a document!");
+		}
 
+		// 0 = DOCID, 1 = DOCNO, 2 = HEADLINE, 3 = DATE, 4 = TITLE, 5 = TEXT
 		Document document = new Document();
-
-		document.add(new StringField("DocNo", sections.get(0), Field.Store.YES));
-		document.add(new TextField("Headline", sections.get(2), Field.Store.YES));
-		document.add(new TextField("Date", sections.get(3), Field.Store.YES));
-		document.add(new TextField("Pub", sections.get(4), Field.Store.YES));
-		document.add(new TextField("Title", sections.get(5), Field.Store.YES));
-		document.add(new TextField("Text", sections.get(6), Field.Store.YES));
+		document.add(new TextField("Headline", sections.get(0), Field.Store.YES));
 
 		return document;
 	}
@@ -84,7 +108,7 @@ public class FTDocumentLoader {
 		return collectionDocuments;
 	}
 
-	public void print(String message) {
+	public static void print(String message) {
 		System.out.println(message);
 	}
 }
