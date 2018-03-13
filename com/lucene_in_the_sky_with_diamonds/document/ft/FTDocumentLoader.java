@@ -56,6 +56,9 @@ public class FTDocumentLoader {
 					}
 					sections = new ArrayList<String>();
 					continue;
+				} else if (line.contains(FTFieldTypes.DOC_NO_START.fieldType)) {
+					docNO = parseDocNO(line);
+					sections.add(docNO);
 				} else if (line.equals(FTFieldTypes.HEADLINE_START.fieldType)) {
 					// Go through the other lines of the document
 					headlineFound = true;
@@ -78,6 +81,13 @@ public class FTDocumentLoader {
 		}
 	}
 
+	private String parseDocNO(String line) {
+		String docNo = "";
+		line = line.replaceAll(FTFieldTypes.DOC_NO_START.fieldType, "");
+		docNo = line.replaceAll(FTFieldTypes.DOC_NO_END.fieldType, "");
+		return docNo;
+	}
+
 	protected static String removeTags(String line) {
 		int beginIndex = line.indexOf('>');
 		int endIndex = line.lastIndexOf('<');
@@ -93,9 +103,9 @@ public class FTDocumentLoader {
 			throw new Exception("Cannot add empty sections to a document!");
 		}
 
-		// 0 = DOCID, 1 = DOCNO, 2 = HEADLINE, 3 = DATE, 4 = TITLE, 5 = TEXT
 		Document document = new Document();
-		document.add(new TextField("Headline", sections.get(0), Field.Store.YES));
+		document.add(new TextField("DocNo", sections.get(0), Field.Store.YES));
+		document.add(new TextField("Headline", sections.get(1), Field.Store.YES));
 
 		return document;
 	}
@@ -110,5 +120,9 @@ public class FTDocumentLoader {
 
 	public static void print(String message) {
 		System.out.println(message);
+	}
+
+	public void setCollectionDocuments(ArrayList<Document> documentList) {
+		this.collectionDocuments = documentList;
 	}
 }
