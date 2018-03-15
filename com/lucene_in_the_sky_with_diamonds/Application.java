@@ -1,4 +1,4 @@
-package lucene_in_the_sky_with_diamonds;
+package com.lucene_in_the_sky_with_diamonds;
 
 import java.io.File;
 import java.nio.file.Files;
