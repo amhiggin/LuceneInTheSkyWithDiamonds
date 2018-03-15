@@ -1,4 +1,4 @@
-package com.lucene_in_the_sky_with_diamonds;
+package lucene_in_the_sky_with_diamonds;
 
 import java.io.File;
 import java.nio.file.Files;
@@ -10,6 +10,7 @@ import org.apache.lucene.document.Document;
 
 import com.lucene_in_the_sky_with_diamonds.document.CollectionType;
 import com.lucene_in_the_sky_with_diamonds.document.ft.FTDocumentLoader;
+import com.lucene_in_the_sky_with_diamonds.document.la.LADocumentLoader;
 
 public class Application {
 
@@ -31,6 +32,7 @@ public class Application {
 	public static void main(String[] args) {
 		try {
 			loadDocumentCollection(CollectionType.FT); // TODO allow this to be passed as args[0]
+			loadDocumentCollection(CollectionType.LA);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -57,7 +59,13 @@ public class Application {
 			print(String.format("%s Federal Register documents loaded, from %s filepaths.",
 					fr94CollectionDocuments.size(), fr94CollectionFilenames.size()));
 		case LA:
-			walkDirTree(LATIMES_FILEPATH);
+			latimesCollectionFilenames = walkDirTree(LATIMES_FILEPATH);
+			LADocumentLoader laDocLoader = new LADocumentLoader();
+			for (String fileName : latimesCollectionFilenames) {
+				laDocLoader.loadDocumentsFromFile(fileName);
+				latimesCollectionDocuments.addAll(laDocLoader.getCollectionDocuments());
+				laDocLoader.setCollectionDocuments(new ArrayList<Document>());
+			}
 			print(String.format("%s Los Angeles Times documents loaded, from %s filepaths.",
 					latimesCollectionDocuments.size(), latimesCollectionFilenames.size()));
 		default:
