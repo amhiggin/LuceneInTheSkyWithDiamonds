@@ -5,22 +5,15 @@ import java.io.FileReader;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.lucene_in_the_sky_with_diamonds.document.ValidDocumentTag;
-
 public class QueryLoader {
-	private List<QueryFieldsObject> queryCollection;
-	private String fileName;
+	private static List<QueryFieldsObject> queryCollection = new ArrayList<QueryFieldsObject>();
 
-	public QueryLoader(String fileName) {
-		this.fileName = fileName;
-	}
-
-	public void loadQueriesFromFile() {
+	public static void loadQueriesFromFile(String fileName) {
 		QueryFieldsObject queryInfo = new QueryFieldsObject();
 
-		String tempTag = ValidDocumentTag.ID.getTag();
+		String tempTag = ValidQueryTag.TOP_START.getTag();
 		try {
-			BufferedReader reader = new BufferedReader(new FileReader(this.fileName));
+			BufferedReader reader = new BufferedReader(new FileReader(fileName));
 			String line = null;
 
 			while ((line = reader.readLine()) != null) {
@@ -35,44 +28,70 @@ public class QueryLoader {
 			}
 			// Add the final query when we get to the end
 			queryCollection.add(queryInfo);
+			queryInfo = new QueryFieldsObject();
 			reader.close();
 
 		} catch (Exception e) {
-			System.out.println(String.format("An exception occurred when parsing the queries from %s", fileName));
+			System.out.println(String.format("An exception occurred when parsing the topics from %s", fileName));
 			e.printStackTrace();
 		}
 
 	}
 
-	private boolean notNewQueryField(String tempTag, String tag) {
-		return !getValidTags().contains(tag) || tag == tempTag;
+	private static boolean notNewQueryField(String tempTag, String tag) {
+		return !getValidQueryFieldTags().contains(tag) || tag == tempTag || tag == null;
 	}
 
-	private void populateAppropriateQueryField(QueryFieldsObject queryInfo, String tempTag, String line) {
-		if (tempTag.equals(ValidQueryTag.ID.getTag())) {
-			queryInfo.setId(line.split(" ")[1]);
-		} else if (tempTag.equals(ValidQueryTag.CONTENT.getTag()) && !line.contains(ValidQueryTag.CONTENT.getTag())) {
-			queryInfo.setContent(queryInfo.getContent().append(" " + line));
+	private static void populateAppropriateQueryField(QueryFieldsObject queryInfo, String tempTag, String line) {
+		if (line.equals(null)) {
+			return;
+		}
+
+		if (tempTag.equals(ValidQueryTag.NUM.getTag())) {
+			queryInfo.setNum(line.split(ValidQueryTag.NUM.getTag())[1]);
+		} else if (tempTag.equals(ValidQueryTag.TITLE.getTag())) {
+			if (line.contains(ValidQueryTag.TITLE.getTag())) {
+				queryInfo.setTitle(queryInfo.getTitle().append(line.split(ValidQueryTag.TITLE.getTag())[1]));
+			} else {
+				queryInfo.setTitle(queryInfo.getTitle().append(line + " "));
+			}
+		} else if (tempTag.equals(ValidQueryTag.NARRATIVE.getTag())) {
+			if (line.contains(ValidQueryTag.NARRATIVE.getTag())) {
+				return;
+			} else {
+				queryInfo.setNarrative(queryInfo.getNarrative().append(line + " "));
+			}
+		} else if (tempTag.equals(ValidQueryTag.DESCRIPTION.getTag())) {
+			if (line.contains(ValidQueryTag.DESCRIPTION.getTag())) {
+				return;
+			} else {
+				queryInfo.setDescription(queryInfo.getDescription().append(line + " "));
+			}
 		}
 	}
 
-	private QueryFieldsObject storeLastQueryIfAllFieldsPopulated(QueryFieldsObject queryInfo, String tempTag) {
-		if (tempTag == ValidQueryTag.ID.getTag()) {
-			// Store the previous document and reset
+	private static QueryFieldsObject storeLastQueryIfAllFieldsPopulated(QueryFieldsObject queryInfo, String tempTag) {
+		if (tempTag == ValidQueryTag.TOP_END.getTag()) {
+			// Store the previous query and reset
+			System.out.println(queryInfo.toString());
 			queryCollection.add(queryInfo);
 			queryInfo = new QueryFieldsObject();
 		}
 		return queryInfo;
 	}
 
-	private List<String> getValidTags() {
+	private static List<String> getValidQueryFieldTags() {
 		List<String> validTags = new ArrayList<String>();
-		validTags.add(ValidQueryTag.ID.tag);
-		validTags.add(ValidQueryTag.CONTENT.tag);
+		validTags.add(ValidQueryTag.NUM.tag);
+		validTags.add(ValidQueryTag.TITLE.tag);
+		validTags.add(ValidQueryTag.NARRATIVE.tag);
+		validTags.add(ValidQueryTag.DESCRIPTION.tag);
+		validTags.add(ValidQueryTag.TOP_END.tag);
+		validTags.add(ValidQueryTag.TOP_START.tag);
 		return validTags;
 	}
 
-	private String getTagFromCurrentLineIfExists(String line) {
+	private static String getTagFromCurrentLineIfExists(String line) {
 		for (ValidQueryTag tag : ValidQueryTag.values()) {
 			if (line.contains(tag.getTag())) {
 				return tag.getTag();
@@ -89,7 +108,4 @@ public class QueryLoader {
 		return queryCollection;
 	}
 
-	public String getFileName() {
-		return this.fileName;
-	}
 }
