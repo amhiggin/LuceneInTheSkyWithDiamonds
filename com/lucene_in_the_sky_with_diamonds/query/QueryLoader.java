@@ -6,9 +6,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class QueryLoader {
-	private static List<QueryFieldsObject> queryCollection = new ArrayList<QueryFieldsObject>();
+	private static List<QueryFieldsObject> queryCollection;
 
-	public static void loadQueriesFromFile(String fileName) {
+	public QueryLoader() {
+		this.queryCollection = new ArrayList<QueryFieldsObject>();
+	}
+
+	public void loadQueriesFromFile(String fileName) {
 		QueryFieldsObject queryInfo = new QueryFieldsObject();
 
 		String tempTag = ValidQueryTag.TOP_START.getTag();
@@ -27,7 +31,7 @@ public class QueryLoader {
 				populateAppropriateQueryField(queryInfo, tempTag, line);
 			}
 			// Add the final query when we get to the end
-			queryCollection.add(queryInfo);
+			this.queryCollection.add(queryInfo);
 			queryInfo = new QueryFieldsObject();
 			reader.close();
 
@@ -38,11 +42,11 @@ public class QueryLoader {
 
 	}
 
-	private static boolean notNewQueryField(String tempTag, String tag) {
+	private boolean notNewQueryField(String tempTag, String tag) {
 		return !getValidQueryFieldTags().contains(tag) || tag == tempTag || tag == null;
 	}
 
-	private static void populateAppropriateQueryField(QueryFieldsObject queryInfo, String tempTag, String line) {
+	private void populateAppropriateQueryField(QueryFieldsObject queryInfo, String tempTag, String line) {
 		if (line.equals(null)) {
 			return;
 		}
@@ -70,17 +74,16 @@ public class QueryLoader {
 		}
 	}
 
-	private static QueryFieldsObject storeLastQueryIfAllFieldsPopulated(QueryFieldsObject queryInfo, String tempTag) {
+	private QueryFieldsObject storeLastQueryIfAllFieldsPopulated(QueryFieldsObject queryInfo, String tempTag) {
 		if (tempTag == ValidQueryTag.TOP_END.getTag()) {
 			// Store the previous query and reset
-			System.out.println(queryInfo.toString());
 			queryCollection.add(queryInfo);
 			queryInfo = new QueryFieldsObject();
 		}
 		return queryInfo;
 	}
 
-	private static List<String> getValidQueryFieldTags() {
+	private List<String> getValidQueryFieldTags() {
 		List<String> validTags = new ArrayList<String>();
 		validTags.add(ValidQueryTag.NUM.tag);
 		validTags.add(ValidQueryTag.TITLE.tag);
@@ -91,7 +94,7 @@ public class QueryLoader {
 		return validTags;
 	}
 
-	private static String getTagFromCurrentLineIfExists(String line) {
+	private String getTagFromCurrentLineIfExists(String line) {
 		for (ValidQueryTag tag : ValidQueryTag.values()) {
 			if (line.contains(tag.getTag())) {
 				return tag.getTag();
