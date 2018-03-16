@@ -16,13 +16,6 @@ import com.lucene_in_the_sky_with_diamonds.query.QueryLoader;
 
 public class Application {
 
-	private static final String APPLICATION_PATH = Paths.get("").toAbsolutePath().toString();
-	private static final String FT_FILEPATH = String.format("%s/input_data/ft/", APPLICATION_PATH);
-	private static final String FBIS_FILEPATH = String.format("%s/input_data/fbis/", APPLICATION_PATH);
-	private static final String FR94_FILEPATH = String.format("%s/input_data/fr94/", APPLICATION_PATH);
-	private static final String LATIMES_FILEPATH = String.format("%s/input_data/latimes/", APPLICATION_PATH);
-	private static final String TOPICS_FILEPATH = String.format("%s/input_data/topics.401-450", APPLICATION_PATH);
-
 	private static List<String> ftCollectionFilenames = new ArrayList<String>();
 	private static List<String> fbisCollectionFilenames = new ArrayList<String>();
 	private static List<String> latimesCollectionFilenames = new ArrayList<String>();
@@ -36,7 +29,7 @@ public class Application {
 	public static void main(String[] args) {
 		try {
 			loadDocumentCollection();
-			loadQueries(TOPICS_FILEPATH);
+			loadQueries();
 
 			print(String.format("%s queries loaded.", queries.size()));
 		} catch (Exception e) {
@@ -49,9 +42,9 @@ public class Application {
 		loadDocumentsForAllCollections();
 	}
 
-	private static void loadQueries(String queryDocFilePath) {
+	private static void loadQueries() {
 		QueryLoader queryLoader = new QueryLoader();
-		queryLoader.loadQueriesFromFile(TOPICS_FILEPATH);
+		queryLoader.loadQueriesFromFile(Constants.TOPICS_FILEPATH);
 		queries = queryLoader.getParsedQueries();
 	}
 
@@ -85,10 +78,10 @@ public class Application {
 	}
 
 	private static void loadFileTreesForAllCollections() throws Exception {
-		ftCollectionFilenames = walkDirTree(FT_FILEPATH);
-		latimesCollectionFilenames = walkDirTree(LATIMES_FILEPATH);
-		fr94CollectionFilenames = walkDirTree(FR94_FILEPATH);
-		fbisCollectionFilenames = walkDirTree(FBIS_FILEPATH);
+		ftCollectionFilenames = walkDirTree(Constants.FT_FILEPATH);
+		latimesCollectionFilenames = walkDirTree(Constants.LATIMES_FILEPATH);
+		fr94CollectionFilenames = walkDirTree(Constants.FR94_FILEPATH);
+		fbisCollectionFilenames = walkDirTree(Constants.FBIS_FILEPATH);
 	}
 
 	private static List<String> walkDirTree(String rootFolder) throws Exception {
