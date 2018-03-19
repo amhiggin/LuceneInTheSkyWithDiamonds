@@ -1,4 +1,4 @@
-package com.lucene_in_the_sky_with_diamonds.relevance;
+package lucene_in_the_sky_with_diamonds.relevance;
 
 public class RelevanceObject {
   int queryNumber;

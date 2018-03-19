@@ -1,4 +1,4 @@
-package com.lucene_in_the_sky_with_diamonds;
+package lucene_in_the_sky_with_diamonds;
 
 import java.io.File;
 import java.io.IOException;
@@ -9,10 +9,11 @@ import java.util.List;
 
 import org.apache.lucene.document.Document;
 
-import com.lucene_in_the_sky_with_diamonds.document.ft.FTDocumentLoader;
-import com.lucene_in_the_sky_with_diamonds.document.la.LADocumentLoader;
-import com.lucene_in_the_sky_with_diamonds.query.QueryFieldsObject;
-import com.lucene_in_the_sky_with_diamonds.query.QueryLoader;
+import lucene_in_the_sky_with_diamonds.document.ft.FTDocumentLoader;
+import lucene_in_the_sky_with_diamonds.document.la.LADocumentLoader;
+import lucene_in_the_sky_with_diamonds.document.fbis.FBISDocumentLoader;
+import lucene_in_the_sky_with_diamonds.query.QueryFieldsObject;
+import lucene_in_the_sky_with_diamonds.query.QueryLoader;
 
 public class Application {
 
@@ -65,7 +66,14 @@ public class Application {
 			latimesCollectionDocuments.addAll(laDocLoader.getCollectionDocuments());
 			laDocLoader.setCollectionDocuments(new ArrayList<Document>());
 		}
-
+		// FBIS
+		
+		FBISDocumentLoader fbisDocLoader = new FBISDocumentLoader();
+		for (String fileName : fbisCollectionFilenames) {
+			fbisDocLoader.loadDocumentsFromFile(fileName);
+			fbisCollectionDocuments.addAll(fbisDocLoader.getCollectionDocuments());
+			fbisDocLoader.setCollectionDocuments(new ArrayList<Document>());
+		}
 		// Print how many docs loaded per collection
 		print(String.format("%s Financial Times documents loaded, from %s filepaths.", ftCollectionDocuments.size(),
 				ftCollectionFilenames.size()));

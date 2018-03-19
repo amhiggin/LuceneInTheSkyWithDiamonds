@@ -1,4 +1,4 @@
-package com.lucene_in_the_sky_with_diamonds.document;
+package lucene_in_the_sky_with_diamonds.document;
 
 public enum CollectionType {
 	FT("ft"), LA("latimes"), FBIS("fbis"), FR94("fr94");

@@ -1,4 +1,4 @@
-package com.lucene_in_the_sky_with_diamonds.document.la;
+package lucene_in_the_sky_with_diamonds.document.la;
 
 import java.io.BufferedReader;
 import java.io.IOException;

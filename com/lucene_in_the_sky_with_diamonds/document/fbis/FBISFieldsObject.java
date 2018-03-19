@@ -1,4 +1,4 @@
-package com.lucene_in_the_sky_with_diamonds;
+package lucene_in_the_sky_with_diamonds.document.fbis;
 
 public class FBISFieldsObject {
 	

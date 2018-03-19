@@ -1,4 +1,4 @@
-package com.lucene_in_the_sky_with_diamonds.document.ft;
+package lucene_in_the_sky_with_diamonds.document.ft;
 
 import java.io.BufferedReader;
 import java.io.InputStream;

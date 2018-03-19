@@ -1,8 +1,7 @@
-package com.lucene_in_the_sky_with_diamonds;
+package lucene_in_the_sky_with_diamonds.document.fbis;
 
 import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
+ 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -11,9 +10,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Scanner;
-import java.util.regex.Pattern;
-
+ 
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.document.StringField;
@@ -21,13 +18,13 @@ import org.apache.lucene.document.TextField;
 
  
 
-public class FBISLoader {
+public class FBISDocumentLoader {
 	/*
 	 * fb496178 is an example  stops in the middle for some reason for text
 	 */
 	private List<Document> collectionDocuments;
 
-	public FBISLoader() {
+	public FBISDocumentLoader() {
 
 		this.collectionDocuments = new ArrayList<Document>();
 	}
@@ -53,7 +50,7 @@ public class FBISLoader {
 			
  
 			
-			System.out.println(fileName+" Doc size (running total)"+ this.collectionDocuments.size());
+//			System.out.println(fileName+" Doc size (running total)"+ this.collectionDocuments.size());
 		 
 
 		} catch (Exception e) {
@@ -240,5 +237,8 @@ public class FBISLoader {
 
 	public List<Document> getCollectionDocuments() {
 		return collectionDocuments;
+	}
+	public void setCollectionDocuments(ArrayList<Document> documentList) {
+		this.collectionDocuments = documentList;
 	}
 }

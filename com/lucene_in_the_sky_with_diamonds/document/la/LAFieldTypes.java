@@ -1,4 +1,4 @@
-package com.lucene_in_the_sky_with_diamonds.document.la;
+package lucene_in_the_sky_with_diamonds.document.la;
 
 public class LAFieldTypes {
 	public static final String DOC_START = "<DOC>";

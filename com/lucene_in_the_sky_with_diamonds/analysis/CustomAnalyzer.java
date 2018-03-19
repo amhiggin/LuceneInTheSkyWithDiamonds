@@ -1,4 +1,4 @@
-package com.lucene_in_the_sky_with_diamonds.analysis;
+package lucene_in_the_sky_with_diamonds.analysis;
 
 import org.apache.lucene.analysis.CharArraySet;
 import org.apache.lucene.analysis.LowerCaseFilter;

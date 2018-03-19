@@ -1,4 +1,4 @@
-package com.lucene_in_the_sky_with_diamonds.document.ft;
+package lucene_in_the_sky_with_diamonds.document.ft;
 
 public enum FTFieldTypes {
 	TEXT_START("<TEXT>"), TEXT_END("</TEXT>"), HEADLINE_START("<HEADLINE>"), HEADLINE_END("</HEADLINE>"), BYLINE_START(
