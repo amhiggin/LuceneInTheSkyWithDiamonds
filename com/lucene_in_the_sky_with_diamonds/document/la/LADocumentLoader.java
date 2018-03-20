@@ -136,11 +136,11 @@ public class LADocumentLoader {
 
 	private Document createDocument(String id, String body, String author, String title, String date) {
 		Document doc = new Document();
-		doc.add(new TextField("id", id, Field.Store.YES));
-		doc.add(new TextField("body", body, Field.Store.YES));
-		doc.add(new TextField("author", author, Field.Store.YES));
-		doc.add(new TextField("title", title, Field.Store.YES));
-		doc.add(new TextField("date", date, Field.Store.YES));
+		doc.add(new TextField("DocNo", id, Field.Store.YES));
+		doc.add(new TextField("Text", body, Field.Store.YES));
+		doc.add(new TextField("Author", author, Field.Store.YES));
+		doc.add(new TextField("Headline", title, Field.Store.YES));
+		doc.add(new TextField("Date", date, Field.Store.YES));
 		return doc;
 	}
 
