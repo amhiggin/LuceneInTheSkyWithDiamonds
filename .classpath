@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
-	<classpathentry excluding="input_data/|src/main/resources/|target/|trec_eval/|src/main/" kind="src" path=""/>
-	<classpathentry kind="src" path="src/main/resources"/>
-	<classpathentry excluding="resources/" kind="src" path="src/main"/>
+	<classpathentry excluding="input_data/|src/main/resources/|target/|trec_eval/|src/|src/main/java/|src/main/java/|src/main/resource/|src/main/resource/|target/classes/" kind="src" path=""/>
+	<classpathentry kind="src" path="target/classes"/>
+	<classpathentry kind="src" path="src/main/java"/>
+	<classpathentry kind="src" path="src/main/resource"/>
 	<classpathentry exported="true" kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry exported="true" kind="con" path="org.eclipse.jdt.USER_LIBRARY/Lucene-7.2.1"/>
 	<classpathentry kind="output" path="bin"/>
