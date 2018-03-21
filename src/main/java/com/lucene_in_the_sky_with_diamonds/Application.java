@@ -108,6 +108,13 @@ public class Application {
       laDocLoader.setCollectionDocuments(new ArrayList<Document>());
     }
 
+	FBISDocumentLoader fbisDocLoader = new FBISDocumentLoader();
+	for (String fileName : fbisCollectionFilenames) {
+		fbisDocLoader.loadDocumentsFromFile(fileName);
+		fbisCollectionDocuments.addAll(fbisDocLoader.getCollectionDocuments());
+		fbisDocLoader.setCollectionDocuments(new ArrayList<Document>());
+	}
+
     // Print how many docs loaded per collection
     print(String.format("%s Financial Times documents loaded, from %s filepaths.",
         ftCollectionDocuments.size(), ftCollectionFilenames.size()));
