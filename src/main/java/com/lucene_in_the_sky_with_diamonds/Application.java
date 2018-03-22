@@ -34,6 +34,7 @@ import org.apache.lucene.search.similarities.LMDirichletSimilarity;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.RAMDirectory;
 import com.lucene_in_the_sky_with_diamonds.analysis.CustomAnalyzer;
+import com.lucene_in_the_sky_with_diamonds.document.fbis.FBISLoader;
 import com.lucene_in_the_sky_with_diamonds.document.la.LADocumentLoader;
 import com.lucene_in_the_sky_with_diamonds.query.QueryFieldsObject;
 
@@ -89,7 +90,7 @@ public class Application {
   }
 
   private static void loadDocumentsForAllCollections() throws IOException {
-    // TODO add @"Ringo" O'Rourke and @"Paul" Xavier's file loading for FBIS, FR94
+    // TODO add @"Ringo" O'Rourke file loading for FR94
 
     // Financial Times
     com.lucene_in_the_sky_with_diamonds.document.ft.FTDocumentLoader financialTimesDocumentLoader =
@@ -106,6 +107,14 @@ public class Application {
       laDocLoader.loadDocumentsFromFile(fileName);
       latimesCollectionDocuments.addAll(laDocLoader.getCollectionDocuments());
       laDocLoader.setCollectionDocuments(new ArrayList<Document>());
+    }
+
+    // FBIS
+    FBISLoader fbisLoader = new FBISLoader();
+    for (String fileName : fbisCollectionFilenames) {
+      fbisLoader.loadDocumentsFromFile(fileName);
+      fbisCollectionDocuments.addAll(fbisLoader.getCollectionDocuments());
+      fbisLoader.setCollectionDocuments(fbisCollectionDocuments);
     }
 
     // Print how many docs loaded per collection
@@ -130,9 +139,13 @@ public class Application {
       indexWriter = new IndexWriter(indexDirectory, config);
       try {
         indexWriter.addDocuments(latimesCollectionDocuments);
+        print("Added latimes documents to index");
         indexWriter.addDocuments(fbisCollectionDocuments);
+        print("Added fbis documents to index");
         indexWriter.addDocuments(fr94CollectionDocuments);
+        print("Added fr94 documents to index");
         indexWriter.addDocuments(ftCollectionDocuments);
+        print("Added ft documents to index");
       } catch (Exception e) {
         print("Failed to add document to the indexWriter");
       }
@@ -142,7 +155,7 @@ public class Application {
       try {
         indexWriter.close();
       } catch (Exception e) {
-        print("Failed to close index writer/index directory: " + e.getMessage());
+        print("Failed to close index writer: " + e.getMessage());
       }
     }
   }
@@ -156,15 +169,15 @@ public class Application {
     loadQueries();
     Map<String, Float> boostsMap = getFieldBoosts();
     // TODO FIXME these fields aren't right
-    QueryParser parser = new MultiFieldQueryParser(
-        new String[] {"title", "author", "bibliography", "text"}, analyzer, boostsMap);
+    QueryParser parser =
+        new MultiFieldQueryParser(new String[] {"Headline", "Text"}, analyzer, boostsMap);
 
     try {
       writer = new PrintWriter(queryResultsFileName, "UTF-8");
       reader = DirectoryReader.open(indexDirectory);
 
       IndexSearcher searcher = defineCustomSearcher(reader, analyzer, scoringModel);
-      for (int queryIndex = 1; queryIndex < queries.size(); queryIndex++) {
+      for (int queryIndex = 1; queryIndex < (queries.size() - 1); queryIndex++) {
         QueryFieldsObject query = queries.get(queryIndex);
         // TODO FIXME Using the title for now as the query
         String stringQuery = QueryParser.escape(query.getTitle().toString());
@@ -278,10 +291,8 @@ public class Application {
 
   private static Map<String, Float> getFieldBoosts() {
     Map<String, Float> boostsMap = new HashMap<String, Float>();
-    boostsMap.put("title", new Float(0.5));
-    boostsMap.put("author", new Float(0.1));
-    boostsMap.put("bibliography", new Float(0.1));
-    boostsMap.put("content", new Float(0.3));
+    boostsMap.put("Headline", new Float(0.8));
+    boostsMap.put("Text", new Float(0.2));
     return boostsMap;
   }
 

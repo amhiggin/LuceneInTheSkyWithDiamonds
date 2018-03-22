@@ -235,4 +235,8 @@ public class FBISLoader {
   public List<Document> getCollectionDocuments() {
     return collectionDocuments;
   }
+
+  public void setCollectionDocuments(List<Document> documents) {
+    this.collectionDocuments = documents;
+  }
 }
