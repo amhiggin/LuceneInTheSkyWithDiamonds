@@ -35,6 +35,7 @@ import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.RAMDirectory;
 import com.lucene_in_the_sky_with_diamonds.analysis.CustomAnalyzer;
 import com.lucene_in_the_sky_with_diamonds.document.la.LADocumentLoader;
+import com.lucene_in_the_sky_with_diamonds.document.fbis.FBISDocumentLoader;
 import com.lucene_in_the_sky_with_diamonds.query.QueryFieldsObject;
 
 public class Application {
