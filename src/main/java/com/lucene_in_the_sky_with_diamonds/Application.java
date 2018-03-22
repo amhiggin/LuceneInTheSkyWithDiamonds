@@ -34,6 +34,7 @@ import org.apache.lucene.search.similarities.LMDirichletSimilarity;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 import com.lucene_in_the_sky_with_diamonds.analysis.CustomAnalyzer;
+import com.lucene_in_the_sky_with_diamonds.document.fr94.FR94DocumentLoader;
 import com.lucene_in_the_sky_with_diamonds.document.fbis.FBISDocumentLoader;
 import com.lucene_in_the_sky_with_diamonds.document.ft.FTDocumentLoader;
 import com.lucene_in_the_sky_with_diamonds.document.la.LADocumentLoader;
@@ -92,7 +93,14 @@ public class Application {
   }
 
   private static void loadDocumentsForAllCollections() throws IOException {
-    // TODO add @"Ringo" O'Rourke file loading for FR94
+	//Federal Register
+	print("loading Federal Register");
+	FR94DocumentLoader federalRegisterDocumentLoader  = new FR94DocumentLoader();
+	for (String fileName : fr94CollectionFilenames) {
+	  federalRegisterDocumentLoader.loadDocumentsFromFile(fileName);
+	  fr94CollectionDocuments.addAll(federalRegisterDocumentLoader.getCollectionDocuments());
+	  federalRegisterDocumentLoader.setCollectionDocuments(new ArrayList<Document>());
+	}
 
     // Financial Times
     FTDocumentLoader financialTimesDocumentLoader = new FTDocumentLoader();
