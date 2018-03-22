@@ -32,11 +32,13 @@ import org.apache.lucene.search.similarities.BooleanSimilarity;
 import org.apache.lucene.search.similarities.ClassicSimilarity;
 import org.apache.lucene.search.similarities.LMDirichletSimilarity;
 import org.apache.lucene.store.Directory;
-import org.apache.lucene.store.RAMDirectory;
+import org.apache.lucene.store.FSDirectory;
 import com.lucene_in_the_sky_with_diamonds.analysis.CustomAnalyzer;
-import com.lucene_in_the_sky_with_diamonds.document.fbis.FBISLoader;
+import com.lucene_in_the_sky_with_diamonds.document.fbis.FBISDocumentLoader;
+import com.lucene_in_the_sky_with_diamonds.document.ft.FTDocumentLoader;
 import com.lucene_in_the_sky_with_diamonds.document.la.LADocumentLoader;
 import com.lucene_in_the_sky_with_diamonds.query.QueryFieldsObject;
+import com.lucene_in_the_sky_with_diamonds.query.QueryLoader;
 
 public class Application {
 
@@ -48,11 +50,11 @@ public class Application {
   private static List<Document> fbisCollectionDocuments = new ArrayList<Document>();
   private static List<Document> latimesCollectionDocuments = new ArrayList<Document>();
   private static List<Document> fr94CollectionDocuments = new ArrayList<Document>();
-  private static List<com.lucene_in_the_sky_with_diamonds.query.QueryFieldsObject> queries =
-      new ArrayList<com.lucene_in_the_sky_with_diamonds.query.QueryFieldsObject>();
+  private static List<QueryFieldsObject> queries = new ArrayList<QueryFieldsObject>();
 
   private static final String ITERATION_NUM = " 0 ";
   private static final int TOP_X_RESULTS = 1000; // Upper limit in Trec-Eval
+  private static final String indexPath = String.format("%s/index", Constants.APPLICATION_PATH);
   private static final String queryResultsFileName =
       String.format("%s/output/results.txt", Constants.APPLICATION_PATH);
   private static String qrelsInputFileName = String.format("", Constants.APPLICATION_PATH);
@@ -64,7 +66,8 @@ public class Application {
       qrelsInputFileName = String.format("%s/output/%s", Constants.APPLICATION_PATH, args[0]);
       if (!(Paths.get(qrelsInputFileName) == null)) {
         Analyzer analyzer = new CustomAnalyzer(StandardAnalyzer.ENGLISH_STOP_WORDS_SET);
-        Directory indexDirectory = new RAMDirectory();
+        Directory indexDirectory = FSDirectory.open(Paths.get(indexPath));
+        IndexWriterConfig config = new IndexWriterConfig(analyzer);
 
         // TODO FIXME: for now, sticking in BM25 scoring model
         indexDocumentCollection(indexDirectory, analyzer, Constants.BM25);
@@ -82,8 +85,7 @@ public class Application {
   }
 
   private static void loadQueries() {
-    com.lucene_in_the_sky_with_diamonds.query.QueryLoader queryLoader =
-        new com.lucene_in_the_sky_with_diamonds.query.QueryLoader();
+    QueryLoader queryLoader = new QueryLoader();
     queryLoader.loadQueriesFromFile(Constants.TOPICS_FILEPATH);
     queries = queryLoader.getParsedQueries();
     print(String.format("%s queries loaded from the topics file.", queries.size()));
@@ -93,16 +95,14 @@ public class Application {
     // TODO add @"Ringo" O'Rourke file loading for FR94
 
     // Financial Times
-    com.lucene_in_the_sky_with_diamonds.document.ft.FTDocumentLoader financialTimesDocumentLoader =
-        new com.lucene_in_the_sky_with_diamonds.document.ft.FTDocumentLoader();
+    FTDocumentLoader financialTimesDocumentLoader = new FTDocumentLoader();
     for (String fileName : ftCollectionFilenames) {
       financialTimesDocumentLoader.loadDocumentsFromFile(fileName);
       ftCollectionDocuments.addAll(financialTimesDocumentLoader.getCollectionDocuments());
       financialTimesDocumentLoader.setCollectionDocuments(new ArrayList<Document>());
     }
     // LA Times
-    LADocumentLoader laDocLoader =
-        new com.lucene_in_the_sky_with_diamonds.document.la.LADocumentLoader();
+    LADocumentLoader laDocLoader = new LADocumentLoader();
     for (String fileName : latimesCollectionFilenames) {
       laDocLoader.loadDocumentsFromFile(fileName);
       latimesCollectionDocuments.addAll(laDocLoader.getCollectionDocuments());
@@ -110,11 +110,13 @@ public class Application {
     }
 
     // FBIS
-    FBISLoader fbisLoader = new FBISLoader();
+    FBISDocumentLoader fbisLoader = new FBISDocumentLoader();
     for (String fileName : fbisCollectionFilenames) {
       fbisLoader.loadDocumentsFromFile(fileName);
       fbisCollectionDocuments.addAll(fbisLoader.getCollectionDocuments());
-      fbisLoader.setCollectionDocuments(fbisCollectionDocuments);
+      // fbisLoader.setCollectionDocuments(fbisCollectionDocuments);
+      fbisLoader.setCollectionDocuments(new ArrayList<Document>()); // TODO check if this
+      // might be the line needed instead
     }
 
     // Print how many docs loaded per collection
@@ -267,7 +269,7 @@ public class Application {
       case Constants.LM_DIRICHLET:
         config.setSimilarity(new LMDirichletSimilarity());
     }
-    config.setOpenMode(IndexWriterConfig.OpenMode.CREATE);
+    config.setOpenMode(IndexWriterConfig.OpenMode.CREATE_OR_APPEND);
     return config;
   }
 
