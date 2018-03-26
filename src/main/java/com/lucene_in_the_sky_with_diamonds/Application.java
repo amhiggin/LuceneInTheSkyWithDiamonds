@@ -196,7 +196,11 @@ public class Application {
 
         for (int i = 0; i < hits.length; i++) {
           ScoreDoc hit = hits[i];
-          writer.println(queryIndex + ITERATION_NUM + (hit.doc + 1) + " " + i + " "
+        
+          Document hitDoc = searcher.doc(hit.doc);
+          
+		  String docNo = hitDoc.get("DocNo");
+          writer.println(queryIndex + ITERATION_NUM + docNo + " " + i + " "
               + Math.round(hit.score) + ITERATION_NUM);
         }
       }
