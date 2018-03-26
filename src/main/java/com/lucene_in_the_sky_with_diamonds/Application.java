@@ -200,7 +200,8 @@ public class Application {
           Document hitDoc = searcher.doc(hit.doc);
           
 		  String docNo = hitDoc.get("DocNo");
-          writer.println(queryIndex + ITERATION_NUM + docNo + " " + i + " "
+		  String topic = query.getNum();
+          writer.println(topic + ITERATION_NUM + docNo + " " + i + " "
               + Math.round(hit.score) + ITERATION_NUM);
         }
       }
