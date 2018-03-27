@@ -10,23 +10,23 @@ import org.apache.lucene.analysis.shingle.ShingleFilter;
 import org.apache.lucene.analysis.standard.StandardFilter;
 import org.apache.lucene.analysis.standard.StandardTokenizer;
 
-public class ShingleAnalyzer extends StopwordAnalyzerBase{
-	public ShingleAnalyzer(CharArraySet stopWordSet) {
-	    super(stopWordSet);
-	  }
+public class ShingleAnalyzer extends StopwordAnalyzerBase {
+  public ShingleAnalyzer(CharArraySet stopWordSet) {
+    super(stopWordSet);
+  }
 
-	  @Override
-	  protected TokenStreamComponents createComponents(String arg0) {
-	    final Tokenizer tokenizer = new StandardTokenizer();
+  @Override
+  protected TokenStreamComponents createComponents(String arg0) {
+    final Tokenizer tokenizer = new StandardTokenizer();
 
-	    // Add additional token filters: lowercase, English stopwords, porter
-	    // stemming
-	    TokenStream tokenStream = new StandardFilter(tokenizer);
-	    tokenStream = new LowerCaseFilter(tokenStream);
-	    tokenStream = new StopFilter(tokenStream, this.stopwords);
-	    tokenStream = new ShingleFilter(tokenStream,2,3);
+    // Add additional token filters: lowercase, English stopwords, porter
+    // stemming
+    TokenStream tokenStream = new StandardFilter(tokenizer);
+    tokenStream = new LowerCaseFilter(tokenStream);
+    tokenStream = new StopFilter(tokenStream, this.stopwords);
+    tokenStream = new ShingleFilter(tokenStream, 2);
 
-	    TokenStreamComponents tokenStreamComponents = new TokenStreamComponents(tokenizer, tokenStream);
-	    return tokenStreamComponents;
-	  }
+    TokenStreamComponents tokenStreamComponents = new TokenStreamComponents(tokenizer, tokenStream);
+    return tokenStreamComponents;
+  }
 }

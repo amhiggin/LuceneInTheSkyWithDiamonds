@@ -12,4 +12,4 @@
 
 QRELS_FILE="$1"
 
-java -jar "$(pwd)"/target/Lucene_in_The_Sky_With_Diamonds-0.0.1-SNAPSHOT.jar "$(pwd)"/"$QRELS_FILE"
+java -jar "$(pwd)"/target/Lucene_in_The_Sky_With_Diamonds-0.0.1-SNAPSHOT.jar "$(pwd)"/"$QRELS_FILE" -XX:-UseGCOverheadLimit

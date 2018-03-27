@@ -67,7 +67,6 @@ public class Application {
       qrelsInputFileName = String.format("%s/%s", Constants.APPLICATION_PATH, args[0]);
       if (!(Paths.get(qrelsInputFileName) == null)) {
         Analyzer analyzer = new CustomAnalyzer(StandardAnalyzer.ENGLISH_STOP_WORDS_SET);
-        // Analyzer analyzer = new ShingleAnalyzer(StandardAnalyzer.ENGLISH_STOP_WORDS_SET);
         Directory indexDirectory = FSDirectory.open(Paths.get(indexPath));
 
         // TODO FIXME: for now, sticking in BM25 scoring model
@@ -176,16 +175,14 @@ public class Application {
     loadQueries();
     Map<String, Float> boostsMap = getFieldBoosts();
     // TODO FIXME these fields aren't right
-    QueryParser parser = new MultiFieldQueryParser(
-        new String[] {Constants.HEADLINE_STRING, Constants.TEXT_STRING}, analyzer, boostsMap);
+    QueryParser parser =
+        new MultiFieldQueryParser(new String[] {"Headline", "Text"}, analyzer, boostsMap);
 
     try {
       writer = new PrintWriter(queryResultsFileName, "UTF-8");
       reader = DirectoryReader.open(indexDirectory);
 
-      IndexSearcher searcher = defineCustomSearcher(reader, analyzer, scoringModel);
-
-
+      IndexSearcher searcher = defineCustomSearcher(reader, scoringModel);
       for (int queryIndex = 0; queryIndex < (queries.size() - 1); queryIndex++) {
         QueryFieldsObject query = queries.get(queryIndex);
         // TODO FIXME Using the title for now as the query
@@ -193,16 +190,12 @@ public class Application {
         Query queryContents = parser.parse(stringQuery);
         hits = searcher.search(queryContents, TOP_X_RESULTS).scoreDocs;
 
-
         for (int i = 0; i < hits.length; i++) {
           ScoreDoc hit = hits[i];
-
           Document hitDoc = searcher.doc(hit.doc);
-
-          String docNo = hitDoc.get(Constants.DOC_NO_STRING);
+          String docNo = hitDoc.get("DocNo");
           String topic = query.getNum();
-          writer.println(topic + ITERATION_NUM + docNo + " " + i + " " + Math.round(hit.score)
-              + ITERATION_NUM);
+          writer.println(topic + ITERATION_NUM + docNo + " " + i + " " + hit.score + ITERATION_NUM);
         }
       }
     } catch (Exception e) {
@@ -219,8 +212,8 @@ public class Application {
     }
   }
 
-  private static IndexSearcher defineCustomSearcher(IndexReader reader, Analyzer analyzer,
-      String scoringModel) throws Exception {
+  private static IndexSearcher defineCustomSearcher(IndexReader reader, String scoringModel)
+      throws Exception {
     IndexSearcher searcher = new IndexSearcher(reader);
     switch (scoringModel) {
       case Constants.BM25:
@@ -306,8 +299,8 @@ public class Application {
 
   private static Map<String, Float> getFieldBoosts() {
     Map<String, Float> boostsMap = new HashMap<String, Float>();
-    boostsMap.put(Constants.HEADLINE_STRING, new Float(0.8));
-    boostsMap.put(Constants.TEXT_STRING, new Float(0.2));
+    boostsMap.put("Headline", new Float(0.8));
+    boostsMap.put("Text", new Float(0.2));
     return boostsMap;
   }
 
