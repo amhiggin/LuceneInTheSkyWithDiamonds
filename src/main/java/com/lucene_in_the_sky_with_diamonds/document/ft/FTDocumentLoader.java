@@ -22,6 +22,9 @@ public class FTDocumentLoader {
   // "<TYPE>"));
 
   private List<Document> collectionDocuments;
+  public static int docsAddedCounter;
+  public static int docNosFoundCounter;
+  public static int addDocumentsExceptionCounter;
 
   public FTDocumentLoader() {
     this.collectionDocuments = new ArrayList<Document>();
@@ -32,7 +35,7 @@ public class FTDocumentLoader {
     try (InputStream stream = Files.newInputStream(Paths.get(fileName))) {
       BufferedReader br = new BufferedReader(new InputStreamReader(stream, StandardCharsets.UTF_8));
       String line = null;
-      String docNO = null, docID = null;
+      String docNO = null;
       StringBuilder headlineStringBuilder = new StringBuilder(),
           textStringBuilder = new StringBuilder();;
       boolean docFound = false, headlineFound = false, textFound = false;
@@ -49,8 +52,9 @@ public class FTDocumentLoader {
           // Save the document and reset the fields
           docFound = false;
           try {
-            getCollectionDocuments().add(createDocument(sections));
+            getCollectionDocuments().add(createDocument(sections, fileName));
           } catch (Exception e) {
+            print("Exception occured for doc" + fileName + " on line: " + line);
             continue;
           }
           sections = new ArrayList<String>();
@@ -58,6 +62,7 @@ public class FTDocumentLoader {
         } else if (line.contains(FTFieldTypes.DOC_NO_START.fieldType)) {
           docNO = parseDocNO(line);
           sections.add(docNO);
+          continue;
         } else if (line.equals(FTFieldTypes.HEADLINE_START.fieldType)) {
           headlineFound = true;
           continue;
@@ -77,6 +82,7 @@ public class FTDocumentLoader {
         }
 
         if (docFound == true) {
+          line = line.replaceAll("(?s)<!--.*?-->", ""); // remove xml comments
           if (headlineFound == true) {
             headlineStringBuilder.append(line + " ");
           } else if (textFound == true) {
@@ -96,33 +102,37 @@ public class FTDocumentLoader {
     return docNo;
   }
 
-  protected static String removeTags(String line) {
-    int beginIndex = line.indexOf('>');
-    int endIndex = line.lastIndexOf('<');
-    if (beginIndex == -1 || endIndex == -1 || beginIndex > endIndex) {
-      print(line);
-      return null;
-    }
-    return line.substring(beginIndex + 1, endIndex).trim();
-  }
-
-  private Document createDocument(ArrayList<String> sections) throws Exception {
+  private Document createDocument(ArrayList<String> sections, String fileName) throws Exception {
+    Document document = new Document();
     if (sections.isEmpty()) {
       throw new Exception("Cannot add empty sections to a document!");
     }
 
-    Document document = new Document();
-    document.add(new TextField("DocNo", sections.get(0), Field.Store.YES));
-    document.add(new TextField("Headline", sections.get(1), Field.Store.YES));
-    document.add(new TextField("Text", sections.get(2), Field.Store.YES));
-    // print(sections.get(1) + "\n" + sections.get(2));
-    // print("-------");
-
+    try {
+      document.add(new TextField("DocNo", sections.get(0), Field.Store.YES));
+      document.add(new TextField("Headline", sections.get(1), Field.Store.YES));
+      document.add(new TextField("Text", sections.get(2), Field.Store.YES));
+    } catch (Exception e) {
+      if (sections.get(0).equals("FT923-14602")) {
+        document = new Document();
+        document.add(new TextField("DocNo", sections.get(0), Field.Store.YES));
+        document.add(new TextField("Text", sections.get(1), Field.Store.YES));
+        document.add(new TextField("Headline", "", Field.Store.YES));
+      } else if (sections.get(0).equals("FT924-11838")) {
+        document = new Document();
+        document.add(new TextField("DocNo", sections.get(0), Field.Store.YES));
+        document.add(new TextField("Headline", sections.get(1), Field.Store.YES));
+        document.add(new TextField("Text", "", Field.Store.YES));
+      } else {
+        e.printStackTrace();
+      }
+    }
     return document;
   }
 
   public int getSizeOfCollection() {
     return collectionDocuments.size();
+
   }
 
   public List<Document> getCollectionDocuments() {

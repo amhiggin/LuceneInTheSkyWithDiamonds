@@ -34,8 +34,8 @@ import org.apache.lucene.search.similarities.LMDirichletSimilarity;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 import com.lucene_in_the_sky_with_diamonds.analysis.CustomAnalyzer;
-import com.lucene_in_the_sky_with_diamonds.document.fr94.FR94DocumentLoader;
 import com.lucene_in_the_sky_with_diamonds.document.fbis.FBISDocumentLoader;
+import com.lucene_in_the_sky_with_diamonds.document.fr94.FR94DocumentLoader;
 import com.lucene_in_the_sky_with_diamonds.document.ft.FTDocumentLoader;
 import com.lucene_in_the_sky_with_diamonds.document.la.LADocumentLoader;
 import com.lucene_in_the_sky_with_diamonds.query.QueryFieldsObject;
@@ -64,11 +64,11 @@ public class Application {
 
   public static void main(String[] args) {
     try {
-      qrelsInputFileName = String.format("%s/output/%s", Constants.APPLICATION_PATH, args[0]);
+      qrelsInputFileName = String.format("%s/%s", Constants.APPLICATION_PATH, args[0]);
       if (!(Paths.get(qrelsInputFileName) == null)) {
         Analyzer analyzer = new CustomAnalyzer(StandardAnalyzer.ENGLISH_STOP_WORDS_SET);
+        // Analyzer analyzer = new ShingleAnalyzer(StandardAnalyzer.ENGLISH_STOP_WORDS_SET);
         Directory indexDirectory = FSDirectory.open(Paths.get(indexPath));
-        IndexWriterConfig config = new IndexWriterConfig(analyzer);
 
         // TODO FIXME: for now, sticking in BM25 scoring model
         indexDocumentCollection(indexDirectory, analyzer, Constants.BM25);
@@ -89,18 +89,17 @@ public class Application {
     QueryLoader queryLoader = new QueryLoader();
     queryLoader.loadQueriesFromFile(Constants.TOPICS_FILEPATH);
     queries = queryLoader.getParsedQueries();
-    print(String.format("%s queries loaded from the topics file.", queries.size()));
+    print("Queries loaded from the topics file.");
   }
 
   private static void loadDocumentsForAllCollections() throws IOException {
-	//Federal Register
-	print("loading Federal Register");
-	FR94DocumentLoader federalRegisterDocumentLoader  = new FR94DocumentLoader();
-	for (String fileName : fr94CollectionFilenames) {
-	  federalRegisterDocumentLoader.loadDocumentsFromFile(fileName);
-	  fr94CollectionDocuments.addAll(federalRegisterDocumentLoader.getCollectionDocuments());
-	  federalRegisterDocumentLoader.setCollectionDocuments(new ArrayList<Document>());
-	}
+    // Federal Register
+    FR94DocumentLoader federalRegisterDocumentLoader = new FR94DocumentLoader();
+    for (String fileName : fr94CollectionFilenames) {
+      federalRegisterDocumentLoader.loadDocumentsFromFile(fileName);
+      fr94CollectionDocuments.addAll(federalRegisterDocumentLoader.getCollectionDocuments());
+      federalRegisterDocumentLoader.setCollectionDocuments(new ArrayList<Document>());
+    }
 
     // Financial Times
     FTDocumentLoader financialTimesDocumentLoader = new FTDocumentLoader();
@@ -122,9 +121,7 @@ public class Application {
     for (String fileName : fbisCollectionFilenames) {
       fbisLoader.loadDocumentsFromFile(fileName);
       fbisCollectionDocuments.addAll(fbisLoader.getCollectionDocuments());
-      // fbisLoader.setCollectionDocuments(fbisCollectionDocuments);
-      fbisLoader.setCollectionDocuments(new ArrayList<Document>()); // TODO check if this
-      // might be the line needed instead
+      fbisLoader.setCollectionDocuments(new ArrayList<Document>());
     }
 
     // Print how many docs loaded per collection
@@ -179,33 +176,33 @@ public class Application {
     loadQueries();
     Map<String, Float> boostsMap = getFieldBoosts();
     // TODO FIXME these fields aren't right
-    QueryParser parser =
-        new MultiFieldQueryParser(new String[] {"Headline", "Text"}, analyzer, boostsMap);
+    QueryParser parser = new MultiFieldQueryParser(
+        new String[] {Constants.HEADLINE_STRING, Constants.TEXT_STRING}, analyzer, boostsMap);
 
     try {
       writer = new PrintWriter(queryResultsFileName, "UTF-8");
       reader = DirectoryReader.open(indexDirectory);
 
       IndexSearcher searcher = defineCustomSearcher(reader, analyzer, scoringModel);
-      
- 
-      for (int queryIndex = 0; queryIndex < (queries.size() -1 ); queryIndex++) {
+
+
+      for (int queryIndex = 0; queryIndex < (queries.size() - 1); queryIndex++) {
         QueryFieldsObject query = queries.get(queryIndex);
         // TODO FIXME Using the title for now as the query
         String stringQuery = QueryParser.escape(query.getTitle().toString());
         Query queryContents = parser.parse(stringQuery);
         hits = searcher.search(queryContents, TOP_X_RESULTS).scoreDocs;
-        
-      
+
+
         for (int i = 0; i < hits.length; i++) {
           ScoreDoc hit = hits[i];
-        
+
           Document hitDoc = searcher.doc(hit.doc);
-          
-		  String docNo = hitDoc.get("DocNo");
-		  String topic = query.getNum();
-          writer.println(topic + ITERATION_NUM + docNo + " " + i + " "
-              + Math.round(hit.score) + ITERATION_NUM);
+
+          String docNo = hitDoc.get(Constants.DOC_NO_STRING);
+          String topic = query.getNum();
+          writer.println(topic + ITERATION_NUM + docNo + " " + i + " " + Math.round(hit.score)
+              + ITERATION_NUM);
         }
       }
     } catch (Exception e) {
@@ -244,8 +241,8 @@ public class Application {
   private static void evaluateResults(Directory indexDirectory, Analyzer analyzer) {
     try {
       // Run trec eval over the two files
-      ProcessBuilder pb = new ProcessBuilder("./trec_eval/trec_eval", "-l", "3", "-m", "all_trec",
-          qrelsInputFileName, queryResultsFileName);
+      ProcessBuilder pb =
+          new ProcessBuilder("./trec_eval/trec_eval", qrelsInputFileName, queryResultsFileName);
       Path workingDirectory = FileSystems.getDefault().getPath(".").toAbsolutePath();
       pb.directory(new File(workingDirectory.toString()));
       Process process = pb.start();
@@ -259,8 +256,8 @@ public class Application {
       }
 
       Files.write(Paths.get(trecEvalOutputFileName), lines, StandardCharsets.UTF_8,
-          StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING,
-          StandardOpenOption.WRITE);
+          StandardOpenOption.CREATE, StandardOpenOption.WRITE,
+          StandardOpenOption.TRUNCATE_EXISTING);
 
       print(String.format("TrecEval results available in %s", trecEvalOutputFileName));
     } catch (IOException e) {
@@ -285,7 +282,7 @@ public class Application {
       case Constants.LM_DIRICHLET:
         config.setSimilarity(new LMDirichletSimilarity());
     }
-    config.setOpenMode(IndexWriterConfig.OpenMode.CREATE_OR_APPEND);
+    config.setOpenMode(IndexWriterConfig.OpenMode.CREATE);
     return config;
   }
 
@@ -309,8 +306,8 @@ public class Application {
 
   private static Map<String, Float> getFieldBoosts() {
     Map<String, Float> boostsMap = new HashMap<String, Float>();
-    boostsMap.put("Headline", new Float(0.8));
-    boostsMap.put("Text", new Float(0.2));
+    boostsMap.put(Constants.HEADLINE_STRING, new Float(0.8));
+    boostsMap.put(Constants.TEXT_STRING, new Float(0.2));
     return boostsMap;
   }
 
