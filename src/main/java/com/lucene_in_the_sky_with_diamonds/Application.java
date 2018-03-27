@@ -187,13 +187,16 @@ public class Application {
       reader = DirectoryReader.open(indexDirectory);
 
       IndexSearcher searcher = defineCustomSearcher(reader, analyzer, scoringModel);
-      for (int queryIndex = 1; queryIndex < (queries.size() - 1); queryIndex++) {
+      
+ 
+      for (int queryIndex = 0; queryIndex < (queries.size() -1 ); queryIndex++) {
         QueryFieldsObject query = queries.get(queryIndex);
         // TODO FIXME Using the title for now as the query
         String stringQuery = QueryParser.escape(query.getTitle().toString());
         Query queryContents = parser.parse(stringQuery);
         hits = searcher.search(queryContents, TOP_X_RESULTS).scoreDocs;
-
+        
+      
         for (int i = 0; i < hits.length; i++) {
           ScoreDoc hit = hits[i];
         
