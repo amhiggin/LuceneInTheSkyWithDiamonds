@@ -6,10 +6,12 @@ import org.apache.lucene.analysis.StopFilter;
 import org.apache.lucene.analysis.StopwordAnalyzerBase;
 import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.analysis.Tokenizer;
+import org.apache.lucene.analysis.en.PorterStemFilter;
 import org.apache.lucene.analysis.miscellaneous.TrimFilter;
 import org.apache.lucene.analysis.standard.StandardFilter;
 import org.apache.lucene.analysis.standard.StandardTokenizer;
-
+import org.apache.lucene.analysis.snowball.SnowballFilter;
+import org.tartarus.snowball.ext.EnglishStemmer;
 public class CustomAnalyzer extends StopwordAnalyzerBase {
 
   public CustomAnalyzer(CharArraySet stopWordSet) {
@@ -25,7 +27,8 @@ public class CustomAnalyzer extends StopwordAnalyzerBase {
     TokenStream tokenStream = new StandardFilter(tokenizer);
     tokenStream = new LowerCaseFilter(tokenStream);
     tokenStream = new StopFilter(tokenStream, this.stopwords);
-    // tokenStream = new PorterStemFilter(tokenStream);
+    //tokenStream = new SnowballFilter(tokenStream, new EnglishStemmer());
+    tokenStream = new PorterStemFilter(tokenStream);
     tokenStream = new TrimFilter(tokenStream);
 
     TokenStreamComponents tokenStreamComponents = new TokenStreamComponents(tokenizer, tokenStream);
