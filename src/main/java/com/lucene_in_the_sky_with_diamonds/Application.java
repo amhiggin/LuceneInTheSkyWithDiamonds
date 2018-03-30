@@ -186,7 +186,7 @@ public class Application {
       for (int queryIndex = 0; queryIndex < (queries.size() - 1); queryIndex++) {
         QueryFieldsObject query = queries.get(queryIndex);
         // TODO FIXME Using the title for now as the query
-        String stringQuery = QueryParser.escape(query.getTitle().toString());
+        String stringQuery = QueryParser.escape(query.getTitle().toString() + " " + query.getDescription().toString());
         Query queryContents = parser.parse(stringQuery);
         hits = searcher.search(queryContents, TOP_X_RESULTS).scoreDocs;
 
@@ -299,8 +299,8 @@ public class Application {
 
   private static Map<String, Float> getFieldBoosts() {
     Map<String, Float> boostsMap = new HashMap<String, Float>();
-    boostsMap.put("Headline", new Float(0.8));
-    boostsMap.put("Text", new Float(0.2));
+    boostsMap.put("Headline", new Float(0.2));
+    boostsMap.put("Text", new Float(0.8));
     return boostsMap;
   }
 

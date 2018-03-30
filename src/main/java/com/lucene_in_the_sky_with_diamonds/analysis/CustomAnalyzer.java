@@ -27,8 +27,8 @@ public class CustomAnalyzer extends StopwordAnalyzerBase {
     TokenStream tokenStream = new StandardFilter(tokenizer);
     tokenStream = new LowerCaseFilter(tokenStream);
     tokenStream = new StopFilter(tokenStream, this.stopwords);
-    //tokenStream = new SnowballFilter(tokenStream, new EnglishStemmer());
-    tokenStream = new PorterStemFilter(tokenStream);
+    tokenStream = new SnowballFilter(tokenStream, new EnglishStemmer());
+    //tokenStream = new PorterStemFilter(tokenStream);
     tokenStream = new TrimFilter(tokenStream);
 
     TokenStreamComponents tokenStreamComponents = new TokenStreamComponents(tokenizer, tokenStream);
