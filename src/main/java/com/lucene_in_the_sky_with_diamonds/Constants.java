@@ -24,25 +24,31 @@ public class Constants {
   static final String BM25 = "bm25";
   static final String BOOLEAN = "boolean";
   static final String LM_DIRICHLET = "dirichlet";
-  static final String[] ALL_SCORING_MODELS = {VSM, BM25, BOOLEAN, LM_DIRICHLET};
+  static final String SWEET_SPOT = "sweetspot";
+  static final String[] ALL_SCORING_MODELS = {VSM, BM25, BOOLEAN, LM_DIRICHLET, SWEET_SPOT};
 
   // Analyzers
   static final String CUSTOM_ANALYZER = "custom";
+  static final String SHINGLE_ANALYZER = "shingle";
   static final String STANDARD_ANALYZER = "standard";
   static final String SIMPLE_ANALYZER = "simple";
   static final String WHITESPACE_ANALYZER = "whitespace";
+  static final String KEYWORD_ANALYZER = "keyword";
   static final String STOP_ANALYZER = "stop";
+  static final String MORFOLOGIK_ANALYZER = "morfologik";
   static final String[] ALL_ANALYZERS =
-      {CUSTOM_ANALYZER, STANDARD_ANALYZER, STOP_ANALYZER, SIMPLE_ANALYZER, WHITESPACE_ANALYZER};
+      {CUSTOM_ANALYZER, STANDARD_ANALYZER, STOP_ANALYZER, SIMPLE_ANALYZER, WHITESPACE_ANALYZER,
+          KEYWORD_ANALYZER, SHINGLE_ANALYZER, MORFOLOGIK_ANALYZER};
 
   // Strings for string formatting
   static final String USAGE_EXCEPTION_STRING =
-      "%s args passed.\nUsage: <SCORING_MODEL> <ANALYZER>\nOptions: [%s|%s|%s|%s], [%s|%s|%s|%s|%s].\nReceived: %s, %s";
+      "%s args passed.\nUsage: <QRELS-FILE> <SCORING_MODEL> <ANALYZER>\n"
+          + "Options: [PATH] [%s|%s|%s|%s|%s], [%s|%s|%s|%s|%s|%s|%s|%s].";
 
   static String usageExceptionMessage(String[] args) {
     return String.format(USAGE_EXCEPTION_STRING, args.length, VSM, BM25, BOOLEAN, LM_DIRICHLET,
-        SIMPLE_ANALYZER, STANDARD_ANALYZER, WHITESPACE_ANALYZER, STOP_ANALYZER, CUSTOM_ANALYZER,
-        args[0], args[1]);
+        SWEET_SPOT, SIMPLE_ANALYZER, STANDARD_ANALYZER, WHITESPACE_ANALYZER, STOP_ANALYZER,
+        CUSTOM_ANALYZER, SHINGLE_ANALYZER, KEYWORD_ANALYZER, MORFOLOGIK_ANALYZER);
   }
 
 }

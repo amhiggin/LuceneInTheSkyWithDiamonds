@@ -16,7 +16,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.apache.lucene.analysis.Analyzer;
-import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.DirectoryReader;
 import org.apache.lucene.index.IndexReader;
@@ -27,13 +26,9 @@ import org.apache.lucene.queryparser.classic.QueryParser;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.ScoreDoc;
-import org.apache.lucene.search.similarities.BM25Similarity;
-import org.apache.lucene.search.similarities.BooleanSimilarity;
-import org.apache.lucene.search.similarities.ClassicSimilarity;
-import org.apache.lucene.search.similarities.LMDirichletSimilarity;
+import org.apache.lucene.search.similarities.Similarity;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
-import com.lucene_in_the_sky_with_diamonds.analysis.CustomAnalyzer;
 import com.lucene_in_the_sky_with_diamonds.document.fbis.FBISDocumentLoader;
 import com.lucene_in_the_sky_with_diamonds.document.fr94.FR94DocumentLoader;
 import com.lucene_in_the_sky_with_diamonds.document.ft.FTDocumentLoader;
@@ -43,6 +38,7 @@ import com.lucene_in_the_sky_with_diamonds.query.QueryLoader;
 
 public class Application {
 
+  private static ApplicationLibrary appLib = new ApplicationLibrary();
   private static List<String> ftCollectionFilenames = new ArrayList<String>();
   private static List<String> fbisCollectionFilenames = new ArrayList<String>();
   private static List<String> latimesCollectionFilenames = new ArrayList<String>();
@@ -64,14 +60,18 @@ public class Application {
 
   public static void main(String[] args) {
     try {
+      if (!(args.length == 3)) {
+        print(Constants.usageExceptionMessage(args));
+        System.exit(1);
+      }
+      Similarity scoringModel = appLib.determineScoringModel(args[1]);
+      Analyzer analyzer = appLib.determineAnalyzer(args[2]);
       qrelsInputFileName = String.format("%s/%s", Constants.APPLICATION_PATH, args[0]);
       if (!(Paths.get(qrelsInputFileName) == null)) {
-        Analyzer analyzer = new CustomAnalyzer(StandardAnalyzer.ENGLISH_STOP_WORDS_SET);
         Directory indexDirectory = FSDirectory.open(Paths.get(indexPath));
 
-        // TODO FIXME: for now, sticking in BM25 scoring model
-        indexDocumentCollection(indexDirectory, analyzer, Constants.BM25);
-        executeQueries(indexDirectory, analyzer, Constants.BM25);
+        indexDocumentCollection(indexDirectory, analyzer, scoringModel);
+        executeQueries(indexDirectory, analyzer, scoringModel);
         evaluateResults(indexDirectory, analyzer);
       }
     } catch (Exception e) {
@@ -136,7 +136,7 @@ public class Application {
   }
 
   private static void indexDocumentCollection(Directory indexDirectory, Analyzer analyzer,
-      String scoringModel) throws Exception {
+      Similarity scoringModel) throws Exception {
     IndexWriterConfig config = defineWriterConfiguration(analyzer, scoringModel);
     IndexWriter indexWriter = null;
     loadDocumentCollection();
@@ -167,7 +167,7 @@ public class Application {
   }
 
   private static void executeQueries(Directory indexDirectory, Analyzer analyzer,
-      String scoringModel) {
+      Similarity scoringModel) {
     ScoreDoc[] hits = {};
     IndexReader reader = null;
     PrintWriter writer = null;
@@ -186,7 +186,8 @@ public class Application {
       for (int queryIndex = 0; queryIndex < (queries.size() - 1); queryIndex++) {
         QueryFieldsObject query = queries.get(queryIndex);
         // TODO FIXME Using the title for now as the query
-        String stringQuery = QueryParser.escape(query.getTitle().toString() + " " + query.getDescription().toString());
+        String stringQuery = QueryParser
+            .escape(query.getTitle().toString() + " " + query.getDescription().toString());
         Query queryContents = parser.parse(stringQuery);
         hits = searcher.search(queryContents, TOP_X_RESULTS).scoreDocs;
 
@@ -212,24 +213,6 @@ public class Application {
     }
   }
 
-  private static IndexSearcher defineCustomSearcher(IndexReader reader, String scoringModel)
-      throws Exception {
-    IndexSearcher searcher = new IndexSearcher(reader);
-    switch (scoringModel) {
-      case Constants.BM25:
-        searcher.setSimilarity(new BM25Similarity());
-        break;
-      case Constants.VSM:
-        searcher.setSimilarity(new ClassicSimilarity());
-        break;
-      case Constants.BOOLEAN:
-        searcher.setSimilarity(new BooleanSimilarity());
-        break;
-      case Constants.LM_DIRICHLET:
-        searcher.setSimilarity(new LMDirichletSimilarity());
-    }
-    return searcher;
-  }
 
   private static void evaluateResults(Directory indexDirectory, Analyzer analyzer) {
     try {
@@ -259,24 +242,19 @@ public class Application {
     }
   }
 
-  private static IndexWriterConfig defineWriterConfiguration(Analyzer analyzer, String scoringModel)
-      throws Exception {
+  private static IndexWriterConfig defineWriterConfiguration(Analyzer analyzer,
+      Similarity scoringModel) throws Exception {
     IndexWriterConfig config = new IndexWriterConfig(analyzer);
-    switch (scoringModel) {
-      case Constants.BM25:
-        config.setSimilarity(new BM25Similarity());
-        break;
-      case Constants.VSM:
-        config.setSimilarity(new ClassicSimilarity());
-        break;
-      case Constants.BOOLEAN:
-        config.setSimilarity(new BooleanSimilarity());
-        break;
-      case Constants.LM_DIRICHLET:
-        config.setSimilarity(new LMDirichletSimilarity());
-    }
+    config.setSimilarity(scoringModel);
     config.setOpenMode(IndexWriterConfig.OpenMode.CREATE);
     return config;
+  }
+
+  private static IndexSearcher defineCustomSearcher(IndexReader reader, Similarity scoringModel)
+      throws Exception {
+    IndexSearcher searcher = new IndexSearcher(reader);
+    searcher.setSimilarity(scoringModel);
+    return searcher;
   }
 
   private static void loadFileTreesForAllCollections() throws Exception {

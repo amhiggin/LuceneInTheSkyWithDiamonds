@@ -11,5 +11,7 @@
 #######################################################
 
 QRELS_FILE="$1"
+SCORING_MODEL="$2"
+ANALYZER="$3"
 
-java -jar "$(pwd)"/target/Lucene_in_The_Sky_With_Diamonds-0.0.1-SNAPSHOT.jar "$(pwd)"/"$QRELS_FILE" -XX:-UseGCOverheadLimit
+java -jar -XX:-UseGCOverheadLimit "$(pwd)"/target/Lucene_in_The_Sky_With_Diamonds-0.0.1-SNAPSHOT.jar "$(pwd)"/"$QRELS_FILE" $SCORING_MODEL $ANALYZER 
