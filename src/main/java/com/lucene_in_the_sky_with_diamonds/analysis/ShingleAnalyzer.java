@@ -9,6 +9,7 @@ import org.apache.lucene.analysis.Tokenizer;
 import org.apache.lucene.analysis.shingle.ShingleFilter;
 import org.apache.lucene.analysis.standard.StandardFilter;
 import org.apache.lucene.analysis.standard.StandardTokenizer;
+import org.apache.lucene.analysis.miscellaneous.LengthFilter;
 
 public class ShingleAnalyzer extends StopwordAnalyzerBase {
   public ShingleAnalyzer(CharArraySet stopWordSet) {
@@ -24,6 +25,7 @@ public class ShingleAnalyzer extends StopwordAnalyzerBase {
     TokenStream tokenStream = new StandardFilter(tokenizer);
     tokenStream = new LowerCaseFilter(tokenStream);
     tokenStream = new StopFilter(tokenStream, this.stopwords);
+    tokenStream = new LengthFilter(tokenStream, 5, 25);
     tokenStream = new ShingleFilter(tokenStream, 2);
 
     TokenStreamComponents tokenStreamComponents = new TokenStreamComponents(tokenizer, tokenStream);
