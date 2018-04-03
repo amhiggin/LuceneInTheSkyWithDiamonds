@@ -41,6 +41,13 @@
 			<artifactId>lucene-misc</artifactId>
 			<version>7.2.1</version>
 		</dependency>
+		<dependency>
+			<groupId>org.apache.lucene</groupId>
+			<artifactId>lucene-analyzers-morfologik</artifactId>
+			<version>7.2.1</version>
+		</dependency>
+		
+		
 
 		
 	</dependencies>
