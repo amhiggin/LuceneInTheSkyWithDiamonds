@@ -42,14 +42,15 @@
 			<version>7.2.1</version>
 		</dependency>
 		<dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-text</artifactId>
+            <version>1.2</version>
+        </dependency>
+		<dependency>
 			<groupId>org.apache.lucene</groupId>
 			<artifactId>lucene-analyzers-morfologik</artifactId>
 			<version>7.2.1</version>
 		</dependency>
-		
-		
-
-		
 	</dependencies>
 
 	<build>

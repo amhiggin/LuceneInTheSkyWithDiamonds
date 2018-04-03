@@ -12,6 +12,7 @@ import java.util.List;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.document.TextField;
+import org.apache.commons.text.StringEscapeUtils;
 
 public class FR94DocumentLoader {
 
@@ -67,7 +68,11 @@ public class FR94DocumentLoader {
 
 				if (docFound == true) {
 					if (textFound == true) {
-						line = line.replaceAll( "(?s)<!--.*?-->", "" ); //remove xml comments
+						//print(line);
+						line = removeCommentsandTags(line);
+						line = unescapeXML(line); //remove tags
+						//print("XXX");
+						//print(line);
 						textStringBuilder.append(line + " ");
 					}
 				}
@@ -91,15 +96,18 @@ public class FR94DocumentLoader {
 		return parent;
 	}
 
-	protected static String removeComments(String line) {
-		String toRemove = "";
-		int beginIndex = line.indexOf('<');
-		int endIndex = line.lastIndexOf('>');
-		if (beginIndex == -1 || endIndex == -1 || beginIndex > endIndex) {
-			//print(line);
-			return null;
-		}
-		return line.replaceAll( "(?s)<!--.*?-->", "" );
+	protected static String removeCommentsandTags(String line) {
+		String removeTags = line.replaceAll("<[^>]*>", "").trim();
+		return removeTags.replaceAll("<!--.*?-->", "").trim();
+	}
+	
+	protected static String unescapeXML(String line) {
+		//unescapes &amp; &quot; etc
+		String base = StringEscapeUtils.unescapeXml(line);
+		//unescape non-standard characters
+		base = base.replace("&blank;", " ");
+		base = base.replaceAll("&hyph", "-");
+		return base;
 	}
 
 	private Document createDocument(ArrayList<String> sections) throws Exception {
@@ -130,5 +138,3 @@ public class FR94DocumentLoader {
 		this.collectionDocuments = documentList;
 	}
 }
-
-
