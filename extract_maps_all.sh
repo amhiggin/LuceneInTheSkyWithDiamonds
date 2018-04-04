@@ -1,9 +1,5 @@
 #/bin/bash
 
-grep 'map' output/trec_eval-vsm-simple-results.txt >> maps.txt
-
-#/bin/bash
-
 
 SCORING_MODEL="vsm"
 (echo "---- $SCORING_MODEL custom_A ----" &&  grep 'map ' "$(pwd)"/output/trec_eval-$SCORING_MODEL-custom_A-results.txt) >> maps.txt
