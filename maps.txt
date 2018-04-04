@@ -1,0 +1,140 @@
+map                   	all	0.1341
+gm_map                	all	0.0752
+---- vsm custom_A ----
+map                   	all	0.1544
+gm_map                	all	0.1068
+---- vsm custom_B ----
+map                   	all	0.1552
+gm_map                	all	0.0959
+---- vsm custom_C ----
+map                   	all	0.1631
+gm_map                	all	0.1103
+---- vsm simple ----
+map                   	all	0.1341
+gm_map                	all	0.0752
+---- vsm standard ----
+map                   	all	0.1443
+gm_map                	all	0.0792
+---- vsm stop ----
+map                   	all	0.1407
+gm_map                	all	0.0786
+---- vsm shingle ----
+map                   	all	0.0151
+gm_map                	all	0.0014
+---- vsm keyword ----
+---- vsm whitespace ----
+map                   	all	0.0961
+gm_map                	all	0.0349
+---- vsm morfologik ----
+map                   	all	0.1266
+gm_map                	all	0.0572
+---- bm25 custom_A ----
+---- bm25 custom_B ----
+map                   	all	0.2764
+gm_map                	all	0.2017
+---- bm25 custom_C ----
+map                   	all	0.2730
+gm_map                	all	0.1928
+---- bm25 simple ----
+map                   	all	0.2526
+gm_map                	all	0.1605
+---- bm25 standard ----
+map                   	all	0.2584
+gm_map                	all	0.1642
+---- bm25 stop ----
+map                   	all	0.2546
+gm_map                	all	0.1610
+---- bm25 shingle ----
+map                   	all	0.0132
+gm_map                	all	0.0016
+---- bm25 keyword ----
+---- bm25 whitespace ----
+map                   	all	0.1797
+gm_map                	all	0.0820
+---- bm25 morfologik ----
+map                   	all	0.2474
+gm_map                	all	0.1507
+---- boolean custom_A ----
+map                   	all	0.0917
+gm_map                	all	0.0352
+---- boolean custom_B ----
+map                   	all	0.0950
+gm_map                	all	0.0377
+---- boolean custom_C ----
+map                   	all	0.0942
+gm_map                	all	0.0340
+---- boolean simple ----
+map                   	all	0.0810
+gm_map                	all	0.0236
+---- boolean standard ----
+map                   	all	0.0920
+gm_map                	all	0.0270
+---- boolean stop ----
+map                   	all	0.0916
+gm_map                	all	0.0281
+---- boolean shingle ----
+map                   	all	0.0116
+gm_map                	all	0.0011
+---- boolean keyword ----
+---- boolean whitespace ----
+map                   	all	0.0727
+gm_map                	all	0.0099
+---- boolean morfologik ----
+map                   	all	0.0893
+gm_map                	all	0.0209
+---- dirichlet custom_A ----
+map                   	all	0.2785
+gm_map                	all	0.1990
+---- dirichlet custom_B ----
+map                   	all	0.2563
+gm_map                	all	0.1767
+---- dirichlet custom_C ----
+map                   	all	0.2632
+gm_map                	all	0.1859
+---- dirichlet simple ----
+map                   	all	0.2398
+gm_map                	all	0.1450
+---- dirichlet standard ----
+map                   	all	0.2422
+gm_map                	all	0.1458
+---- dirichlet stop ----
+map                   	all	0.2430
+gm_map                	all	0.1449
+---- dirichlet shingle ----
+map                   	all	0.0116
+gm_map                	all	0.0014
+---- dirichlet keyword ----
+---- dirichlet whitespace ----
+map                   	all	0.1885
+gm_map                	all	0.0806
+---- dirichlet morfologik ----
+map                   	all	0.2353
+gm_map                	all	0.1365
+---- sweetspot custom_A ----
+map                   	all	0.1544
+gm_map                	all	0.1068
+---- sweetspot custom_B ----
+map                   	all	0.1552
+gm_map                	all	0.0959
+---- sweetspot custom_C ----
+map                   	all	0.1631
+gm_map                	all	0.1103
+---- sweetspot simple ----
+map                   	all	0.1341
+gm_map                	all	0.0752
+---- sweetspot standard ----
+map                   	all	0.1443
+gm_map                	all	0.0792
+---- sweetspot stop ----
+map                   	all	0.1407
+gm_map                	all	0.0786
+---- sweetspot shingle ----
+map                   	all	0.0151
+gm_map                	all	0.0014
+---- sweetspot keyword ----
+---- sweetspot whitespace ----
+map                   	all	0.0961
+gm_map                	all	0.0349
+---- sweetspot morfologik ----
+map                   	all	0.1266
+gm_map                	all	0.0572
