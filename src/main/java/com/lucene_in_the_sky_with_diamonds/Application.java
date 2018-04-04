@@ -188,7 +188,8 @@ public class Application {
 				QueryFieldsObject query = queries.get(queryIndex);
 				// TODO FIXME Using the title for now as the query
 				String stringQuery = QueryParser
-						.escape(query.getTitle().toString() + " " + query.getDescription().toString());
+						.escape(query.getTitle().toString() + " " + query.getDescription().toString() );
+				
 				Query queryContents = parser.parse(stringQuery);
 				hits = searcher.search(queryContents, TOP_X_RESULTS).scoreDocs;
 

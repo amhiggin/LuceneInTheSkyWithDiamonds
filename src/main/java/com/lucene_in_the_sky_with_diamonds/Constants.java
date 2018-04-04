@@ -2,6 +2,8 @@ package com.lucene_in_the_sky_with_diamonds;
 
 import java.nio.file.Paths;
 
+import org.apache.lucene.search.similarities.LMJelinekMercerSimilarity;
+
 public class Constants {
 
 	// Filepaths for document collections
@@ -19,12 +21,13 @@ public class Constants {
 	static final String HEADLINE_STRING = "Headline";
 
 	// Scoring models
-	static final String VSM = "vsm";
+	static final String VSM = "vsm"; 
 	static final String BM25 = "bm25";
 	static final String BOOLEAN = "boolean";
 	static final String LM_DIRICHLET = "dirichlet";
 	static final String SWEET_SPOT = "sweetspot";
-	static final String[] ALL_SCORING_MODELS = { VSM, BM25, BOOLEAN, LM_DIRICHLET, SWEET_SPOT };
+	static final String LM_JELINEK_MERCER = "lmjm";
+	static final String[] ALL_SCORING_MODELS = { VSM, BM25, BOOLEAN, LM_DIRICHLET, SWEET_SPOT,LM_JELINEK_MERCER };
 
 	// Analyzers
 	static final String CUSTOM_ANALYZER_A = "custom_A";
@@ -46,7 +49,7 @@ public class Constants {
 			+ "Options: [PATH] [%s|%s|%s|%s|%s], [%s|%s|%s|%s|%s|%s|%s|%s|%s|%s].";
 
 	static String usageExceptionMessage(String[] args) {
-		return String.format(USAGE_EXCEPTION_STRING, args.length, VSM, BM25, BOOLEAN, LM_DIRICHLET, SWEET_SPOT,
+		return String.format(USAGE_EXCEPTION_STRING, args.length, VSM, BM25, BOOLEAN, LM_DIRICHLET, SWEET_SPOT,LM_JELINEK_MERCER,
 				SIMPLE_ANALYZER, STANDARD_ANALYZER, WHITESPACE_ANALYZER, STOP_ANALYZER, CUSTOM_ANALYZER_A,
 				CUSTOM_ANALYZER_B, CUSTOM_ANALYZER_C, SHINGLE_ANALYZER, KEYWORD_ANALYZER, MORFOLOGIK_ANALYZER);
 	}

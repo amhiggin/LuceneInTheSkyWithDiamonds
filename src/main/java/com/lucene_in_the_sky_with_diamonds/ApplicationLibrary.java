@@ -12,6 +12,7 @@ import org.apache.lucene.search.similarities.BM25Similarity;
 import org.apache.lucene.search.similarities.BooleanSimilarity;
 import org.apache.lucene.search.similarities.ClassicSimilarity;
 import org.apache.lucene.search.similarities.LMDirichletSimilarity;
+import org.apache.lucene.search.similarities.LMJelinekMercerSimilarity;
 import org.apache.lucene.search.similarities.Similarity;
 
 import com.lucene_in_the_sky_with_diamonds.analysis.CustomAnalyzer;
@@ -42,6 +43,8 @@ public class ApplicationLibrary {
 		case Constants.SWEET_SPOT:
 			similarityModel = new SweetSpotSimilarity();
 			break;
+		case Constants.LM_JELINEK_MERCER:
+			similarityModel = new  LMJelinekMercerSimilarity( 0.7f);
 		default:
 			throw new Exception(String.format("Invalid scoring model specified: %s", scoringModel));
 		}
