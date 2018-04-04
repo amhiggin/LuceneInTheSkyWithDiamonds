@@ -44,7 +44,9 @@ public class ApplicationLibrary {
 			similarityModel = new SweetSpotSimilarity();
 			break;
 		case Constants.LM_JELINEK_MERCER:
+			System.out.println("here");
 			similarityModel = new  LMJelinekMercerSimilarity( 0.7f);
+			break;
 		default:
 			throw new Exception(String.format("Invalid scoring model specified: %s", scoringModel));
 		}
