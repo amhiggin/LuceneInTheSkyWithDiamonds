@@ -15,7 +15,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;
@@ -31,7 +30,6 @@ import org.apache.lucene.search.ScoreDoc;
 import org.apache.lucene.search.similarities.Similarity;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
-
 import com.lucene_in_the_sky_with_diamonds.document.fbis.FBISDocumentLoader;
 import com.lucene_in_the_sky_with_diamonds.document.fr94.FR94DocumentLoader;
 import com.lucene_in_the_sky_with_diamonds.document.ft.FTDocumentLoader;
@@ -39,8 +37,7 @@ import com.lucene_in_the_sky_with_diamonds.document.la.LADocumentLoader;
 import com.lucene_in_the_sky_with_diamonds.query.QueryFieldsObject;
 import com.lucene_in_the_sky_with_diamonds.query.QueryLoader;
 
-public class Application {
-
+public class Application { 
 	private static ApplicationLibrary appLib = new ApplicationLibrary();
 	private static List<String> ftCollectionFilenames = new ArrayList<String>();
 	private static List<String> fbisCollectionFilenames = new ArrayList<String>();
