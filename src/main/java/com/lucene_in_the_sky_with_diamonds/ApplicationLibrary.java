@@ -8,11 +8,15 @@ import org.apache.lucene.analysis.core.WhitespaceAnalyzer;
 import org.apache.lucene.analysis.morfologik.MorfologikAnalyzer;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.misc.SweetSpotSimilarity;
+import org.apache.lucene.search.similarities.AfterEffectL;
 import org.apache.lucene.search.similarities.BM25Similarity;
+import org.apache.lucene.search.similarities.BasicModelP;
 import org.apache.lucene.search.similarities.BooleanSimilarity;
 import org.apache.lucene.search.similarities.ClassicSimilarity;
 import org.apache.lucene.search.similarities.LMDirichletSimilarity;
 import org.apache.lucene.search.similarities.LMJelinekMercerSimilarity;
+import org.apache.lucene.search.similarities.NormalizationH2;
+import org.apache.lucene.search.similarities.DFRSimilarity;
 import org.apache.lucene.search.similarities.Similarity;
 
 import com.lucene_in_the_sky_with_diamonds.analysis.CustomAnalyzer;
@@ -29,7 +33,7 @@ public class ApplicationLibrary {
 		Similarity similarityModel = null;
 		switch (scoringModel) {
 		case Constants.BM25:
-			similarityModel = new BM25Similarity();
+			similarityModel =  new BM25Similarity();
 			break;
 		case Constants.VSM:
 			similarityModel = new ClassicSimilarity();
@@ -44,9 +48,11 @@ public class ApplicationLibrary {
 			similarityModel = new SweetSpotSimilarity();
 			break;
 		case Constants.LM_JELINEK_MERCER:
-			System.out.println("here");
-			similarityModel = new  LMJelinekMercerSimilarity( 0.7f);
+		     
+			
+			similarityModel = new  LMJelinekMercerSimilarity( 0.49f);
 			break;
+			//new DFRSimilarity(new BasicModelP(), new AfterEffectL(), new NormalizationH2());
 		default:
 			throw new Exception(String.format("Invalid scoring model specified: %s", scoringModel));
 		}

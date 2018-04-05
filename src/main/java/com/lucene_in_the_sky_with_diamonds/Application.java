@@ -15,8 +15,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 import org.apache.lucene.analysis.Analyzer;
+import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.DirectoryReader;
 import org.apache.lucene.index.IndexReader;
@@ -30,7 +30,6 @@ import org.apache.lucene.search.ScoreDoc;
 import org.apache.lucene.search.similarities.Similarity;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
-
 import com.lucene_in_the_sky_with_diamonds.document.fbis.FBISDocumentLoader;
 import com.lucene_in_the_sky_with_diamonds.document.fr94.FR94DocumentLoader;
 import com.lucene_in_the_sky_with_diamonds.document.ft.FTDocumentLoader;
@@ -38,8 +37,7 @@ import com.lucene_in_the_sky_with_diamonds.document.la.LADocumentLoader;
 import com.lucene_in_the_sky_with_diamonds.query.QueryFieldsObject;
 import com.lucene_in_the_sky_with_diamonds.query.QueryLoader;
 
-public class Application {
-
+public class Application { 
 	private static ApplicationLibrary appLib = new ApplicationLibrary();
 	private static List<String> ftCollectionFilenames = new ArrayList<String>();
 	private static List<String> fbisCollectionFilenames = new ArrayList<String>();
@@ -73,7 +71,7 @@ public class Application {
 					args[1], args[2]);
 			if (!(Paths.get(qrelsInputFileName) == null)) {
 				Directory indexDirectory = FSDirectory.open(Paths.get(indexPath));
-
+			 
 				indexDocumentCollection(indexDirectory, analyzer, scoringModel);
 				executeQueries(indexDirectory, analyzer, scoringModel);
 				evaluateResults(indexDirectory, analyzer);
@@ -188,7 +186,7 @@ public class Application {
 				QueryFieldsObject query = queries.get(queryIndex);
 				// TODO FIXME Using the title for now as the query
 				String stringQuery = QueryParser
-						.escape(query.getTitle().toString() + " " + query.getDescription().toString() );
+						.escape(query.getTitle().toString() + " " + query.getDescription().toString() +" "+  parseNarrative(query.getNarrative().toString()));
 				
 				Query queryContents = parser.parse(stringQuery);
 				hits = searcher.search(queryContents, TOP_X_RESULTS).scoreDocs;
@@ -239,8 +237,27 @@ public class Application {
 			print("An exception occurred whilst executing trec eval over the results");
 			e.printStackTrace();
 		}
+	} 
+	private static String parseNarrative(String text) {
+		/*
+		 * First splits based on dot and removes sentences that include "not relevant"
+		 * And removes phrases like "a relevant document", "a document will","to be relevant", "relevant documents" and "a document must"
+		 */
+		StringBuilder result = new StringBuilder();
+		String [] narativeSplit = text.toLowerCase().split("\\.");
+		 
+		for (String sec: narativeSplit) {
+			 
+			if (!sec.contains("not relevant")) {
+				
+				String re = sec.replaceAll("a relevant document|a document will|to be relevant|relevant documents|a document must|relevant","");
+				result.append(re);
+			}
+		 
+		}
+		 
+		return result.toString();
 	}
-
 	private static IndexWriterConfig defineWriterConfiguration(Analyzer analyzer, Similarity scoringModel)
 			throws Exception {
 		IndexWriterConfig config = new IndexWriterConfig(analyzer);
