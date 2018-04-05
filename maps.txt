@@ -1,5 +1,3 @@
-map                   	all	0.1341
-gm_map                	all	0.0752
 ---- vsm custom_A ----
 map                   	all	0.1544
 gm_map                	all	0.1068
@@ -21,7 +19,6 @@ gm_map                	all	0.0786
 ---- vsm shingle ----
 map                   	all	0.0151
 gm_map                	all	0.0014
----- vsm keyword ----
 ---- vsm whitespace ----
 map                   	all	0.0961
 gm_map                	all	0.0349
@@ -47,7 +44,6 @@ gm_map                	all	0.1610
 ---- bm25 shingle ----
 map                   	all	0.0132
 gm_map                	all	0.0016
----- bm25 keyword ----
 ---- bm25 whitespace ----
 map                   	all	0.1797
 gm_map                	all	0.0820
@@ -75,7 +71,6 @@ gm_map                	all	0.0281
 ---- boolean shingle ----
 map                   	all	0.0116
 gm_map                	all	0.0011
----- boolean keyword ----
 ---- boolean whitespace ----
 map                   	all	0.0727
 gm_map                	all	0.0099
@@ -103,7 +98,6 @@ gm_map                	all	0.1449
 ---- dirichlet shingle ----
 map                   	all	0.0116
 gm_map                	all	0.0014
----- dirichlet keyword ----
 ---- dirichlet whitespace ----
 map                   	all	0.1885
 gm_map                	all	0.0806
@@ -131,10 +125,36 @@ gm_map                	all	0.0786
 ---- sweetspot shingle ----
 map                   	all	0.0151
 gm_map                	all	0.0014
----- sweetspot keyword ----
 ---- sweetspot whitespace ----
 map                   	all	0.0961
 gm_map                	all	0.0349
 ---- sweetspot morfologik ----
 map                   	all	0.1266
 gm_map                	all	0.0572
+---- lmjm custom_A ----
+map                   	all	0.2986
+gm_map                	all	0.2268
+---- lmjm custom_B ----
+map                   	all	0.2756
+gm_map                	all	0.1988
+---- lmjm custom_C ----
+map                   	all	0.2963
+gm_map                	all	0.2165
+---- lmjm simple ----
+map                   	all	0.2563
+gm_map                	all	0.1642
+---- lmjm standard ----
+map                   	all	0.2610
+gm_map                	all	0.1670
+---- lmjm stop ----
+map                   	all	0.2588
+gm_map                	all	0.1662
+---- lmjm shingle ----
+map                   	all	0.0129
+gm_map                	all	0.0015
+---- lmjm whitespace ----
+map                   	all	0.1919
+gm_map                	all	0.0859
+---- lmjm morfologik ----
+map                   	all	0.2452
+gm_map                	all	0.1493
