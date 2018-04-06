@@ -71,7 +71,7 @@ public class Application {
 			qrelsInputFileName = String.format("%s/%s", Constants.APPLICATION_PATH, args[0]);
 			queryResultsFileName = String.format("%s/output/%s-%s-results.txt", Constants.APPLICATION_PATH, args[1],
 					args[2]);
-			trecEvalOutputFileName = String.format("%s/output/trec-eval-%s-%s-results.txt", Constants.APPLICATION_PATH,
+			trecEvalOutputFileName = String.format("%s/output/trec_eval-%s-%s-results.txt", Constants.APPLICATION_PATH,
 					args[1], args[2]);
 			if (!(Paths.get(qrelsInputFileName) == null)) {
 				Directory indexDirectory = FSDirectory.open(Paths.get(indexPath));
@@ -106,7 +106,7 @@ public class Application {
 			federalRegisterDocumentLoader.setCollectionDocuments(new ArrayList<Document>());
 		}
 
-		// // Financial Times
+		// Financial Times
 		FTDocumentLoader financialTimesDocumentLoader = new FTDocumentLoader();
 		for (String fileName : ftCollectionFilenames) {
 			financialTimesDocumentLoader.loadDocumentsFromFile(fileName);
