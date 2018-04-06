@@ -32,10 +32,10 @@ public class ApplicationLibrary {
 	}
 
 	Similarity determineScoringModel(String scoringModel) throws Exception {
-		Similarity similarityModel = null; 
-		switch (scoringModel) { 
-		case Constants.BM25:  
-			similarityModel =  new BM25Similarity();
+		Similarity similarityModel = null;  
+		switch (scoringModel) {
+		case Constants.BM25: 
+			similarityModel =  new BM25Similarity(); 
 			break;
 		case Constants.VSM:
 			similarityModel = new ClassicSimilarity();
