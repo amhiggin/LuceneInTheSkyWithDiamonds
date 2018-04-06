@@ -47,16 +47,10 @@ public class ApplicationLibrary {
 		case Constants.LM_JELINEK_MERCER:
 			similarityModel = new LMJelinekMercerSimilarity(0.49f);
 			break;
-		// new DFRSimilarity(new BasicModelP(), new AfterEffectL(), new 
-		// NormalizationH2());
 		case Constants.MULTI:
-			// LMJelinekMercerSimilarity
-			// new DFRSimilarity(new BasicModelP(), new AfterEffectL(), new
-			// NormalizationH3())
 			Similarity sims[] = { new LMDirichletSimilarity(), new LMJelinekMercerSimilarity(0.7f),
 					new LMDirichletSimilarity(), new BM25Similarity() };
 			similarityModel = new MultiSimilarity(sims);
-			// new LMJelinekMercerSimilarity( 0.7f);
 			break;
 		default:
 			throw new Exception(String.format("Invalid scoring model specified: %s", scoringModel));
