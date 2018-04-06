@@ -30,6 +30,7 @@ import org.apache.lucene.search.BooleanQuery;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.ScoreDoc;
+import org.apache.lucene.search.TopDocs;
 import org.apache.lucene.search.similarities.Similarity;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
@@ -223,16 +224,16 @@ public class Application {
 			IndexReader reader, PrintWriter writer) throws Exception {
 		BooleanQuery.Builder queryBuilder = new BooleanQuery.Builder();
 		queryBuilder.add(queryContents, BooleanClause.Occur.SHOULD);
-		hits = searcher.search(queryContents, TOP_X_RESULTS).scoreDocs;
+		TopDocs topDocs = searcher.search(queryContents, 10);
 
-		for (int i = 0; i < hits.length; i++) {
-			ScoreDoc hit = hits[i];
-			Document hitDoc = searcher.doc(hit.doc);
+		for (ScoreDoc score : topDocs.scoreDocs) {
+			Document hitDoc = reader.document(score.doc);
 			String fieldText = hitDoc.getField("Text").stringValue();
 			String[] moreLikeThisField = { "Text" };
-			MoreLikeThisQuery mltq = new MoreLikeThisQuery(fieldText, moreLikeThisField, analyzer, "Text");
-			Query new_query = mltq.rewrite(reader);
-			queryBuilder.add(new_query, BooleanClause.Occur.SHOULD);
+			MoreLikeThisQuery expandedQueryMoreLikeThis = new MoreLikeThisQuery(fieldText, moreLikeThisField, analyzer,
+					"Text");
+			Query expandedQuery = expandedQueryMoreLikeThis.rewrite(reader);
+			queryBuilder.add(expandedQuery, BooleanClause.Occur.SHOULD);
 		}
 		return queryBuilder.build();
 	}
