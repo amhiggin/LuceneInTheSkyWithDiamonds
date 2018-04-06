@@ -37,7 +37,9 @@ There were a number of other analyzers experimented with but not used in the fin
 The optimal value of lambda for the LMJelinekMercerSimilarity was found to be 0.75. The default parameters were assumed for the LMDirichletSimilarity model.
 
 ### Document Fields
-There were a number of fields which were common across all of the documents: in particular, the 'Headline' and 'Text' fields.
+There were a number of fields which were common across all of the documents: in particular, the 'Headline' and 'Text' fields. These were the two fields used to deliver the most performant search engine for the datasets.
+
+Date fields were also explored as part of the project: However, overall they disimproved the performance of the search engine and so were omitted from the final implementation.
 
 ### Field Boosts
 Field boosts were used on the <i>Text</i> and <i>Headline</i> fields of the documents, with a weighting of 0.2 on the <i>Headline</i> and of 0.8 on the <i>Text</i>.
