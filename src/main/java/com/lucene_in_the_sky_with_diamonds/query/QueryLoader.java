@@ -70,6 +70,7 @@ public class QueryLoader {
 				return;
 			} else {
 				queryInfo.setDescription(queryInfo.getDescription().append(line + " "));
+				
 			}
 		}
 	}
@@ -109,6 +110,19 @@ public class QueryLoader {
 
 	public List<QueryFieldsObject> getParsedQueries() {
 		return queryCollection;
+	}
+	
+	private String getDate(String date) {
+		String clean = "";
+		for(int i = 0; i<DaysMonths.MONTHS.length ; i++) {
+			if(date.contains(DaysMonths.MONTHS[i])) {
+				int index = date.indexOf(DaysMonths.MONTHS[i]);
+				String target = date.substring(index);
+				clean = target.replaceAll("(,)|(\\?)", "");
+				System.out.println(clean);
+			}
+		}
+		return clean;
 	}
 
 }
