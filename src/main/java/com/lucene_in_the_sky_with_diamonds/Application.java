@@ -72,7 +72,7 @@ public class Application {
 			if (!(Paths.get(qrelsInputFileName) == null)) {
 				Directory indexDirectory = FSDirectory.open(Paths.get(indexPath));
 			 
-				indexDocumentCollection(indexDirectory, analyzer, scoringModel);
+				//indexDocumentCollection(indexDirectory, analyzer, scoringModel);
 				executeQueries(indexDirectory, analyzer, scoringModel);
 				evaluateResults(indexDirectory, analyzer);
 			}
@@ -164,8 +164,8 @@ public class Application {
 			} catch (Exception e) {
 				print("Failed to close index writer: " + e.getMessage());
 			}
-		}
-	}
+		} 
+	} 
 
 	private static void executeQueries(Directory indexDirectory, Analyzer analyzer, Similarity scoringModel) {
 		ScoreDoc[] hits = {};

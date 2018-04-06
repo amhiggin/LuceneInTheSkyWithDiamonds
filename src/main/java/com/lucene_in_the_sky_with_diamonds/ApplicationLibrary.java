@@ -58,7 +58,7 @@ public class ApplicationLibrary {
 		case Constants.MULTI:
 			// LMJelinekMercerSimilarity
 			//new DFRSimilarity(new BasicModelP(), new AfterEffectL(), new NormalizationH3())
-			Similarity sims[] = {new LMDirichletSimilarity(),new BM25Similarity(), new  LMJelinekMercerSimilarity( 0.7f),new LMDirichletSimilarity(),new BM25Similarity()};
+			Similarity sims[] = {new LMDirichletSimilarity(), new  LMJelinekMercerSimilarity( 0.7f),new LMDirichletSimilarity(),new BM25Similarity()};
             
 			similarityModel = new MultiSimilarity(sims);//new  LMJelinekMercerSimilarity( 0.7f);
             break;
