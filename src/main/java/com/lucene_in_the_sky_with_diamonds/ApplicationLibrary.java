@@ -53,7 +53,7 @@ public class ApplicationLibrary {
 			// LMJelinekMercerSimilarity
 			// new DFRSimilarity(new BasicModelP(), new AfterEffectL(), new
 			// NormalizationH3())
-			Similarity sims[] = { new LMDirichletSimilarity(), new LMJelinekMercerSimilarity(0.7f)};
+			Similarity sims[] = { new LMDirichletSimilarity(), new LMJelinekMercerSimilarity(0.75f)};
 			similarityModel = new MultiSimilarity(sims);
 			// new LMJelinekMercerSimilarity( 0.7f);
 			break;
