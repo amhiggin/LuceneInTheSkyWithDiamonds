@@ -6,5 +6,7 @@
 	<classpathentry kind="src" path="src/main/resource"/>
 	<classpathentry exported="true" kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry exported="true" kind="con" path="org.eclipse.jdt.USER_LIBRARY/Lucene-7.2.1"/>
+	<classpathentry kind="lib" path="/home/jibin/Desktop/mything/commons-text-1.2.jar"/>
+	<classpathentry kind="lib" path="/home/jibin/Desktop/mything/lucene-analyzers-morfologik-7.2.1.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

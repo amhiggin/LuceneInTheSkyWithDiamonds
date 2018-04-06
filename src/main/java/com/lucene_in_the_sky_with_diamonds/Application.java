@@ -56,8 +56,8 @@ public class Application {
 	private static String queryResultsFileName = String.format("", Constants.APPLICATION_PATH);
 	private static String qrelsInputFileName = String.format("", Constants.APPLICATION_PATH);
 	private static String trecEvalOutputFileName = String.format("", Constants.APPLICATION_PATH);
-	private static boolean narrTest = false;
-
+	private static boolean narrTest = false; 
+ 
 	public static void main(String[] args) {
 		try {
 			if (!(args.length == 3)) {
@@ -74,7 +74,7 @@ public class Application {
 			if (!(Paths.get(qrelsInputFileName) == null)) {
 				Directory indexDirectory = FSDirectory.open(Paths.get(indexPath));
 			 
-				//indexDocumentCollection(indexDirectory, analyzer, scoringModel);
+				indexDocumentCollection(indexDirectory, analyzer, scoringModel);
 				executeQueries(indexDirectory, analyzer, scoringModel);
 				evaluateResults(indexDirectory, analyzer);
 			}
@@ -188,9 +188,10 @@ public class Application {
 				QueryFieldsObject query = queries.get(queryIndex);
 				
 				// TODO FIXME Using the title for now as the query
-				String negQuery = "";
+				
 				
 				List <String> narr =  parseNarrative(query.getNarrative().toString());
+				String negQuery = narr.get(1);
 				String stringQuery = QueryParser
 						.escape(query.getTitle().toString() + " " + query.getDescription().toString() +" " + narr.get(0));
 				if(narrTest)
@@ -202,9 +203,9 @@ public class Application {
 				
 				Query queryContents = parser.parse(stringQuery);
 				
-				
+			 
 				if(!narr.get(1).isEmpty()) {
-					Query negQ = parser.parse(negQuery);
+					Query negQ = parser.parse(negQuery );
 					queryContents = new BoostingQuery(queryContents, negQ, 0.01f);
 					
 				}
