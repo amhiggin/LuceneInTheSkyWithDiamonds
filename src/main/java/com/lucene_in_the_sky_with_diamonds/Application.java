@@ -78,7 +78,7 @@ public class Application {
 					args[1], args[2]);
 			if (!(Paths.get(qrelsInputFileName) == null)) {
 				Directory indexDirectory = FSDirectory.open(Paths.get(indexPath));
-				//indexDocumentCollection(indexDirectory, analyzer, scoringModel); 
+				indexDocumentCollection(indexDirectory, analyzer, scoringModel); 
 				executeQueries(indexDirectory, analyzer, scoringModel);
 				evaluateResults(indexDirectory, analyzer);
 			}
