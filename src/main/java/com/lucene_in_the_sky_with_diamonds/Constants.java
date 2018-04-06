@@ -27,6 +27,7 @@ public class Constants {
 	static final String LM_DIRICHLET = "dirichlet";
 	static final String SWEET_SPOT = "sweetspot";
 	static final String LM_JELINEK_MERCER = "lmjm";
+	static final String MULTI = "multi";
 	static final String[] ALL_SCORING_MODELS = { VSM, BM25, BOOLEAN, LM_DIRICHLET, SWEET_SPOT,LM_JELINEK_MERCER };
 
 	// Analyzers
