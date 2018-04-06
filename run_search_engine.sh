@@ -11,7 +11,10 @@
 #######################################################
 
 QRELS_FILE="$1"
-SCORING_MODEL="$2"
-ANALYZER="$3"
+#SCORING_MODEL="$2"
+#ANALYZER="$3"
 
-java -jar -XX:-UseGCOverheadLimit "$(pwd)"/target/Lucene_in_The_Sky_With_Diamonds-0.0.1-SNAPSHOT.jar "$(pwd)"/"$QRELS_FILE" $SCORING_MODEL $ANALYZER 
+
+# This will run the search engine with a user-input specifying the qrels file
+# It will use the MultiSimilarity that was defined in the code (ApplicationLibrary.java) and the CustomAnalyzer.java analyzer
+java -jar -XX:-UseGCOverheadLimit "$(pwd)"/target/Lucene_in_The_Sky_With_Diamonds-0.0.1-SNAPSHOT.jar "$(pwd)"/"$QRELS_FILE" "multi" "custom_A"
