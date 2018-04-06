@@ -74,7 +74,7 @@ public class Application {
 			if (!(Paths.get(qrelsInputFileName) == null)) {
 				Directory indexDirectory = FSDirectory.open(Paths.get(indexPath));
 			 
-				indexDocumentCollection(indexDirectory, analyzer, scoringModel);
+				//indexDocumentCollection(indexDirectory, analyzer, scoringModel);
 				executeQueries(indexDirectory, analyzer, scoringModel);
 				evaluateResults(indexDirectory, analyzer);
 			}
@@ -162,10 +162,10 @@ public class Application {
 			e.printStackTrace();
 		} finally {
 			try {
-				indexWriter.close();
+				indexWriter.close(); 
 			} catch (Exception e) {
 				print("Failed to close index writer: " + e.getMessage());
-			}
+			} 
 		}
 	}
 
@@ -189,19 +189,28 @@ public class Application {
 				
 				// TODO FIXME Using the title for now as the query
 				String negQuery = "";
+				
+				List <String> narr =  parseNarrative(query.getNarrative().toString());
 				String stringQuery = QueryParser
-						.escape(query.getTitle().toString() + " " + query.getDescription().toString() +" "+  parseNarrative(query.getNarrative().toString()));
+						.escape(query.getTitle().toString() + " " + query.getDescription().toString() +" " + narr.get(0));
 				if(narrTest)
 				{
 					stringQuery = QueryParser
 							.escape(query.getTitle().toString() + " " + query.getDescription().toString());	
-					negQuery = QueryParser.escape(parseNarrative(query.getNarrative().toString()));	
+					negQuery = QueryParser.escape(narr.get(1));	
 				}
 				
 				Query queryContents = parser.parse(stringQuery);
-				Query negQ = parser.parse(negQuery);
 				
-				Query balancedQuery = new BoostingQuery(queryContents, negQ, 0.01f);
+				
+				if(!narr.get(1).isEmpty()) {
+					Query negQ = parser.parse(negQuery);
+					queryContents = new BoostingQuery(queryContents, negQ, 0.01f);
+					
+				}
+				
+				
+				
 				
 				hits = searcher.search(queryContents, TOP_X_RESULTS).scoreDocs;
 
@@ -252,31 +261,34 @@ public class Application {
 			e.printStackTrace();
 		}
 	} 
-	private static String parseNarrative(String text) {
+	private static List<String> parseNarrative(String text) {
 		/*
 		 * First splits based on dot and removes sentences that include "not relevant"
 		 * And removes phrases like "a relevant document", "a document will","to be relevant", "relevant documents" and "a document must"
 		 */
-		StringBuilder result = new StringBuilder();
+		StringBuilder posResult = new StringBuilder();
+		StringBuilder negResult = new StringBuilder();
 		String [] narativeSplit = text.toLowerCase().split("\\.");
-		 
+		List <String> result = new ArrayList<String>();
 		for (String sec: narativeSplit) {
 			 
 			if (!sec.contains("not relevant") && !sec.contains("irrelevant")) {
 				
 				String re = sec.replaceAll("a relevant document|a document will|to be relevant|relevant documents|a document must|relevant|will contain|will discuss|will provide|must cite","");
-				result.append(re);
+				posResult.append(re);
 				narrTest=false;
 			}
 			else
 			{
 				String re = sec.replaceAll("are also not relevant|are not relevant|are irrelevant|is not relevant", "");
-				result.append(re);
+				negResult.append(re);
 				narrTest = true;
 			} 
 		}
+		result.add(posResult.toString());
+		result.add(negResult.toString());
 		 
-		return result.toString();
+		return result;
 	}
 	private static IndexWriterConfig defineWriterConfiguration(Analyzer analyzer, Similarity scoringModel)
 			throws Exception {
