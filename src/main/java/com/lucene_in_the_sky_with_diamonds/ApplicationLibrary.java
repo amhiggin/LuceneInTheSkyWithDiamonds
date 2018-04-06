@@ -47,7 +47,7 @@ public class ApplicationLibrary {
 		case Constants.LM_JELINEK_MERCER:
 			similarityModel = new LMJelinekMercerSimilarity(0.49f);
 			break;
-		// new DFRSimilarity(new BasicModelP(), new AfterEffectL(), new
+		// new DFRSimilarity(new BasicModelP(), new AfterEffectL(), new 
 		// NormalizationH2());
 		case Constants.MULTI:
 			// LMJelinekMercerSimilarity

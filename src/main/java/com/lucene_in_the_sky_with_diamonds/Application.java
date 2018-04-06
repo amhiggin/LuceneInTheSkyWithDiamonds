@@ -53,7 +53,7 @@ public class Application {
 	private static List<Document> fbisCollectionDocuments = new ArrayList<Document>();
 	private static List<Document> latimesCollectionDocuments = new ArrayList<Document>();
 	private static List<Document> fr94CollectionDocuments = new ArrayList<Document>();
-	private static List<QueryFieldsObject> queries = new ArrayList<QueryFieldsObject>();
+	private static List<QueryFieldsObject> queries = new ArrayList<QueryFieldsObject>(); 
 
 	private static final String ITERATION_NUM = " 0 ";
 	private static final int TOP_X_RESULTS = 1000; // Upper limit in Trec-Eval
@@ -78,7 +78,7 @@ public class Application {
 					args[1], args[2]);
 			if (!(Paths.get(qrelsInputFileName) == null)) {
 				Directory indexDirectory = FSDirectory.open(Paths.get(indexPath));
-				indexDocumentCollection(indexDirectory, analyzer, scoringModel);
+				//indexDocumentCollection(indexDirectory, analyzer, scoringModel); 
 				executeQueries(indexDirectory, analyzer, scoringModel);
 				evaluateResults(indexDirectory, analyzer);
 			}
@@ -203,7 +203,7 @@ public class Application {
 				Query queryContents = parser.parse(stringQuery);
 				if (!narrative.get(1).isEmpty()) {
 					Query negQ = parser.parse(negQuery);
-					queryContents = new BoostingQuery(queryContents, negQ, 0.01f);
+					queryContents = new BoostingQuery(queryContents, negQ, 0.01f); 
 				}
 
 				Query expandedQuery = expandQuery(searcher, analyzer, queryContents, hits, reader, writer);
@@ -216,7 +216,7 @@ public class Application {
 					String topic = query.getNum();
 					writer.println(topic + ITERATION_NUM + docNo + " " + i + " " + hit.score + ITERATION_NUM);
 				}
-			}
+			} 
 		} catch (Exception e) {
 			print("An exception occurred: " + e.getMessage());
 		} finally {
@@ -235,7 +235,7 @@ public class Application {
 			IndexReader reader, PrintWriter writer) throws Exception {
 		BooleanQuery.Builder queryBuilder = new BooleanQuery.Builder();
 		queryBuilder.add(queryContents, BooleanClause.Occur.SHOULD);
-		TopDocs topDocs = searcher.search(queryContents, 10);
+		TopDocs topDocs = searcher.search(queryContents, 4);
 
 		for (ScoreDoc score : topDocs.scoreDocs) {
 			Document hitDoc = reader.document(score.doc);
