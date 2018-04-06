@@ -1,6 +1,6 @@
 # LuceneInTheSkyWithDiamonds
 
-A Lucene search engine for the document collection from the <i<8th Text-based REtrieval Conference (TREC)</i>, consisting of documents from the Los Angeles Times (<i>latimes</i>), the Foreign Broadcast Information Service (<i>fbis</i>, the Federal Register 1994 (<i>fr94</i>) and the Financial Times (<i>ft</i>) collections.
+A Lucene search engine for the document collection from the <i>8th Text-based REtrieval Conference (TREC)</i>, consisting of documents from the Los Angeles Times (<i>latimes</i>), the Foreign Broadcast Information Service (<i>fbis</i>, the Federal Register 1994 (<i>fr94</i>) and the Financial Times (<i>ft</i>) collections.
 
 ## Running the Search Engine
 The <i>run_search_engine.sh</i> script will run the search engine. It will also generate the trec-eval results file, in the /output directory.
