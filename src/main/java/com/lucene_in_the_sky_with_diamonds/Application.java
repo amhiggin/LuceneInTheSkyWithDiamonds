@@ -194,7 +194,7 @@ public class Application {
 
 				Query queryContents = parser.parse(stringQuery);
 				Query expandedQuery = expandQuery(searcher, analyzer, queryContents, hits, reader, writer);
-				hits = searcher.search(queryContents, TOP_X_RESULTS).scoreDocs;
+				hits = searcher.search(expandedQuery, TOP_X_RESULTS).scoreDocs;
 
 				for (int i = 0; i < hits.length; i++) {
 					ScoreDoc hit = hits[i];
