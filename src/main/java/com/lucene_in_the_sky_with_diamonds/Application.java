@@ -78,9 +78,9 @@ public class Application {
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
-		}
+		} 
 	}
-
+ 
 	private static void loadDocumentCollection() throws Exception {
 		loadFileTreesForAllCollections();
 		loadDocumentsForAllCollections();
@@ -250,7 +250,7 @@ public class Application {
 			 
 			if (!sec.contains("not relevant")) {
 				
-				String re = sec.replaceAll("a relevant document|a document will|to be relevant|relevant documents|a document must|relevant","");
+				String re = sec.replaceAll("a relevant document|a document will|to be relevant|relevant documents|a document must|relevant|will contain|will discuss|will provide|must cite","");
 				result.append(re);
 			}
 		 

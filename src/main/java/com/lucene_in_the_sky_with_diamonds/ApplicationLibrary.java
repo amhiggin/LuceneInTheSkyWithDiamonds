@@ -27,9 +27,9 @@ public class ApplicationLibrary {
 	}
 
 	Similarity determineScoringModel(String scoringModel) throws Exception {
-		Similarity similarityModel = null;
+		Similarity similarityModel = null; 
 		switch (scoringModel) {
-		case Constants.BM25:
+		case Constants.BM25: 
 			similarityModel =  new BM25Similarity();
 			break;
 		case Constants.VSM:
@@ -51,8 +51,9 @@ public class ApplicationLibrary {
 			break;
 			//new DFRSimilarity(new BasicModelP(), new AfterEffectL(), new NormalizationH2());
 		case Constants.MULTI:
-			Similarity sims[] = { new  LMJelinekMercerSimilarity( 0.65f),new LMDirichletSimilarity(),new BM25Similarity()};
+			Similarity sims[] = {new LMDirichletSimilarity(), new  LMJelinekMercerSimilarity( 0.65f),new LMDirichletSimilarity(),new BM25Similarity()};
             similarityModel = new MultiSimilarity(sims);//new  LMJelinekMercerSimilarity( 0.7f);
+            break;
 		default:
 			throw new Exception(String.format("Invalid scoring model specified: %s", scoringModel));
 		}
