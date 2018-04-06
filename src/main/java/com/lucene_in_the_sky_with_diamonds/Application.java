@@ -26,6 +26,7 @@ import org.apache.lucene.queryparser.classic.MultiFieldQueryParser;
 import org.apache.lucene.queryparser.classic.QueryParser;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.Query;
+import org.apache.lucene.queries.BoostingQuery;
 import org.apache.lucene.search.ScoreDoc;
 import org.apache.lucene.search.similarities.Similarity;
 import org.apache.lucene.store.Directory;
@@ -55,6 +56,7 @@ public class Application {
 	private static String queryResultsFileName = String.format("", Constants.APPLICATION_PATH);
 	private static String qrelsInputFileName = String.format("", Constants.APPLICATION_PATH);
 	private static String trecEvalOutputFileName = String.format("", Constants.APPLICATION_PATH);
+	private static boolean narrTest = false;
 
 	public static void main(String[] args) {
 		try {
@@ -184,11 +186,23 @@ public class Application {
 			IndexSearcher searcher = defineCustomSearcher(reader, scoringModel);
 			for (int queryIndex = 0; queryIndex < (queries.size() - 1); queryIndex++) {
 				QueryFieldsObject query = queries.get(queryIndex);
+				
 				// TODO FIXME Using the title for now as the query
+				String negQuery = "";
 				String stringQuery = QueryParser
 						.escape(query.getTitle().toString() + " " + query.getDescription().toString() +" "+  parseNarrative(query.getNarrative().toString()));
+				if(narrTest)
+				{
+					stringQuery = QueryParser
+							.escape(query.getTitle().toString() + " " + query.getDescription().toString());	
+					negQuery = QueryParser.escape(parseNarrative(query.getNarrative().toString()));	
+				}
 				
 				Query queryContents = parser.parse(stringQuery);
+				Query negQ = parser.parse(negQuery);
+				
+				Query balancedQuery = new BoostingQuery(queryContents, negQ, 0.01f);
+				
 				hits = searcher.search(queryContents, TOP_X_RESULTS).scoreDocs;
 
 				for (int i = 0; i < hits.length; i++) {
@@ -248,12 +262,18 @@ public class Application {
 		 
 		for (String sec: narativeSplit) {
 			 
-			if (!sec.contains("not relevant")) {
+			if (!sec.contains("not relevant") && !sec.contains("irrelevant")) {
 				
 				String re = sec.replaceAll("a relevant document|a document will|to be relevant|relevant documents|a document must|relevant|will contain|will discuss|will provide|must cite","");
 				result.append(re);
+				narrTest=false;
 			}
-		 
+			else
+			{
+				String re = sec.replaceAll("are also not relevant|are not relevant|are irrelevant|is not relevant", "");
+				result.append(re);
+				narrTest = true;
+			} 
 		}
 		 
 		return result.toString();
