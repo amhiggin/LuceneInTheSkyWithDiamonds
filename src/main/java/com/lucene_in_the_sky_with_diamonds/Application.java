@@ -15,22 +15,27 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
 import org.apache.lucene.analysis.Analyzer;
-import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.DirectoryReader;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
+import org.apache.lucene.queries.BoostingQuery;
+import org.apache.lucene.queries.mlt.MoreLikeThisQuery;
 import org.apache.lucene.queryparser.classic.MultiFieldQueryParser;
 import org.apache.lucene.queryparser.classic.QueryParser;
+import org.apache.lucene.search.BooleanClause;
+import org.apache.lucene.search.BooleanQuery;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.Query;
-import org.apache.lucene.queries.BoostingQuery;
 import org.apache.lucene.search.ScoreDoc;
+import org.apache.lucene.search.TopDocs;
 import org.apache.lucene.search.similarities.Similarity;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
+
 import com.lucene_in_the_sky_with_diamonds.document.fbis.FBISDocumentLoader;
 import com.lucene_in_the_sky_with_diamonds.document.fr94.FR94DocumentLoader;
 import com.lucene_in_the_sky_with_diamonds.document.ft.FTDocumentLoader;
@@ -38,7 +43,7 @@ import com.lucene_in_the_sky_with_diamonds.document.la.LADocumentLoader;
 import com.lucene_in_the_sky_with_diamonds.query.QueryFieldsObject;
 import com.lucene_in_the_sky_with_diamonds.query.QueryLoader;
 
-public class Application { 
+public class Application {
 	private static ApplicationLibrary appLib = new ApplicationLibrary();
 	private static List<String> ftCollectionFilenames = new ArrayList<String>();
 	private static List<String> fbisCollectionFilenames = new ArrayList<String>();
@@ -56,8 +61,8 @@ public class Application {
 	private static String queryResultsFileName = String.format("", Constants.APPLICATION_PATH);
 	private static String qrelsInputFileName = String.format("", Constants.APPLICATION_PATH);
 	private static String trecEvalOutputFileName = String.format("", Constants.APPLICATION_PATH);
-	private static boolean narrTest = false; 
- 
+	private static boolean narrTest = false;
+
 	public static void main(String[] args) {
 		try {
 			if (!(args.length == 3)) {
@@ -69,20 +74,19 @@ public class Application {
 			qrelsInputFileName = String.format("%s/%s", Constants.APPLICATION_PATH, args[0]);
 			queryResultsFileName = String.format("%s/output/%s-%s-results.txt", Constants.APPLICATION_PATH, args[1],
 					args[2]);
-			trecEvalOutputFileName = String.format("%s/output/trec-eval-%s-%s-results.txt", Constants.APPLICATION_PATH,
+			trecEvalOutputFileName = String.format("%s/output/trec_eval-%s-%s-results.txt", Constants.APPLICATION_PATH,
 					args[1], args[2]);
 			if (!(Paths.get(qrelsInputFileName) == null)) {
 				Directory indexDirectory = FSDirectory.open(Paths.get(indexPath));
-			 
-				//indexDocumentCollection(indexDirectory, analyzer, scoringModel);
+				indexDocumentCollection(indexDirectory, analyzer, scoringModel);
 				executeQueries(indexDirectory, analyzer, scoringModel);
 				evaluateResults(indexDirectory, analyzer);
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
-		} 
+		}
 	}
- 
+
 	private static void loadDocumentCollection() throws Exception {
 		loadFileTreesForAllCollections();
 		loadDocumentsForAllCollections();
@@ -104,7 +108,7 @@ public class Application {
 			federalRegisterDocumentLoader.setCollectionDocuments(new ArrayList<Document>());
 		}
 
-		// // Financial Times
+		// Financial Times
 		FTDocumentLoader financialTimesDocumentLoader = new FTDocumentLoader();
 		for (String fileName : ftCollectionFilenames) {
 			financialTimesDocumentLoader.loadDocumentsFromFile(fileName);
@@ -162,10 +166,10 @@ public class Application {
 			e.printStackTrace();
 		} finally {
 			try {
-				indexWriter.close(); 
+				indexWriter.close();
 			} catch (Exception e) {
 				print("Failed to close index writer: " + e.getMessage());
-			} 
+			}
 		}
 	}
 
@@ -176,7 +180,6 @@ public class Application {
 
 		loadQueries();
 		Map<String, Float> boostsMap = getFieldBoosts();
-		// TODO FIXME these fields aren't right
 		QueryParser parser = new MultiFieldQueryParser(new String[] { "Headline", "Text" }, analyzer, boostsMap);
 
 		try {
@@ -186,33 +189,24 @@ public class Application {
 			IndexSearcher searcher = defineCustomSearcher(reader, scoringModel);
 			for (int queryIndex = 0; queryIndex < (queries.size() - 1); queryIndex++) {
 				QueryFieldsObject query = queries.get(queryIndex);
-				
-				// TODO FIXME Using the title for now as the query
-				
-				
-				List <String> narr =  parseNarrative(query.getNarrative().toString());
+				List<String> narr = parseNarrative(query.getNarrative().toString());
 				String negQuery = narr.get(1);
-				String stringQuery = QueryParser
-						.escape(query.getTitle().toString() + " " + query.getDescription().toString() +" " + narr.get(0));
-				if(narrTest)
-				{
+				String stringQuery = QueryParser.escape(
+						query.getTitle().toString() + " " + query.getDescription().toString() + " " + narr.get(0));
+				if (narrTest) {
 					stringQuery = QueryParser
-							.escape(query.getTitle().toString() + " " + query.getDescription().toString());	
-					negQuery = QueryParser.escape(narr.get(1));	
+							.escape(query.getTitle().toString() + " " + query.getDescription().toString());
+					negQuery = QueryParser.escape(narr.get(1));
 				}
-				
+
 				Query queryContents = parser.parse(stringQuery);
-				
-			 
-				if(!narr.get(1).isEmpty()) {
-					Query negQ = parser.parse(negQuery );
+
+				if (!narr.get(1).isEmpty()) {
+					Query negQ = parser.parse(negQuery);
 					queryContents = new BoostingQuery(queryContents, negQ, 0.01f);
-					
+
 				}
-				
-				
-				
-				
+
 				hits = searcher.search(queryContents, TOP_X_RESULTS).scoreDocs;
 
 				for (int i = 0; i < hits.length; i++) {
@@ -222,6 +216,7 @@ public class Application {
 					String topic = query.getNum();
 					writer.println(topic + ITERATION_NUM + docNo + " " + i + " " + hit.score + ITERATION_NUM);
 				}
+
 			}
 		} catch (Exception e) {
 			print("An exception occurred: " + e.getMessage());
@@ -235,6 +230,24 @@ public class Application {
 				e.printStackTrace();
 			}
 		}
+	}
+
+	private static Query expandQuery(IndexSearcher searcher, Analyzer analyzer, Query queryContents, ScoreDoc[] hits,
+			IndexReader reader, PrintWriter writer) throws Exception {
+		BooleanQuery.Builder queryBuilder = new BooleanQuery.Builder();
+		queryBuilder.add(queryContents, BooleanClause.Occur.SHOULD);
+		TopDocs topDocs = searcher.search(queryContents, 10);
+
+		for (ScoreDoc score : topDocs.scoreDocs) {
+			Document hitDoc = reader.document(score.doc);
+			String fieldText = hitDoc.getField("Text").stringValue();
+			String[] moreLikeThisField = { "Text" };
+			MoreLikeThisQuery expandedQueryMoreLikeThis = new MoreLikeThisQuery(fieldText, moreLikeThisField, analyzer,
+					"Text");
+			Query expandedQuery = expandedQueryMoreLikeThis.rewrite(reader);
+			queryBuilder.add(expandedQuery, BooleanClause.Occur.SHOULD);
+		}
+		return queryBuilder.build();
 	}
 
 	private static void evaluateResults(Directory indexDirectory, Analyzer analyzer) {
@@ -261,36 +274,41 @@ public class Application {
 			print("An exception occurred whilst executing trec eval over the results");
 			e.printStackTrace();
 		}
-	} 
+	}
+
 	private static List<String> parseNarrative(String text) {
+
 		/*
-		 * First splits based on dot and removes sentences that include "not relevant"
-		 * And removes phrases like "a relevant document", "a document will","to be relevant", "relevant documents" and "a document must"
+		 * First splits based on dot and removes sentences that include
+		 * "not relevant" And removes phrases like "a relevant document",
+		 * "a document will","to be relevant", "relevant documents" and
+		 * "a document must"
 		 */
 		StringBuilder posResult = new StringBuilder();
 		StringBuilder negResult = new StringBuilder();
-		String [] narativeSplit = text.toLowerCase().split("\\.");
-		List <String> result = new ArrayList<String>();
-		for (String sec: narativeSplit) {
-			 
+		String[] narativeSplit = text.toLowerCase().split("\\.");
+		List<String> result = new ArrayList<String>();
+		for (String sec : narativeSplit) {
+
 			if (!sec.contains("not relevant") && !sec.contains("irrelevant")) {
-				
-				String re = sec.replaceAll("a relevant document|a document will|to be relevant|relevant documents|a document must|relevant|will contain|will discuss|will provide|must cite","");
+
+				String re = sec.replaceAll(
+						"a relevant document|a document will|to be relevant|relevant documents|a document must|relevant|will contain|will discuss|will provide|must cite",
+						"");
 				posResult.append(re);
-				narrTest=false;
-			}
-			else
-			{
+				narrTest = false;
+			} else {
 				String re = sec.replaceAll("are also not relevant|are not relevant|are irrelevant|is not relevant", "");
 				negResult.append(re);
 				narrTest = true;
-			} 
+			}
 		}
 		result.add(posResult.toString());
 		result.add(negResult.toString());
-		 
+
 		return result;
 	}
+
 	private static IndexWriterConfig defineWriterConfiguration(Analyzer analyzer, Similarity scoringModel)
 			throws Exception {
 		IndexWriterConfig config = new IndexWriterConfig(analyzer);
