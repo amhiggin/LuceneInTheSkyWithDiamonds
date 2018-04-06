@@ -189,25 +189,25 @@ public class Application {
 			IndexSearcher searcher = defineCustomSearcher(reader, scoringModel);
 			for (int queryIndex = 0; queryIndex < (queries.size() - 1); queryIndex++) {
 				QueryFieldsObject query = queries.get(queryIndex);
-				List<String> narr = parseNarrative(query.getNarrative().toString());
-				String negQuery = narr.get(1);
+
+				List<String> narrative = parseNarrative(query.getNarrative().toString());
+				String negQuery = narrative.get(1);
 				String stringQuery = QueryParser.escape(
-						query.getTitle().toString() + " " + query.getDescription().toString() + " " + narr.get(0));
+						query.getTitle().toString() + " " + query.getDescription().toString() + " " + narrative.get(0));
 				if (narrTest) {
 					stringQuery = QueryParser
 							.escape(query.getTitle().toString() + " " + query.getDescription().toString());
-					negQuery = QueryParser.escape(narr.get(1));
+					negQuery = QueryParser.escape(narrative.get(1));
 				}
 
 				Query queryContents = parser.parse(stringQuery);
-
-				if (!narr.get(1).isEmpty()) {
+				if (!narrative.get(1).isEmpty()) {
 					Query negQ = parser.parse(negQuery);
 					queryContents = new BoostingQuery(queryContents, negQ, 0.01f);
-
 				}
 
-				hits = searcher.search(queryContents, TOP_X_RESULTS).scoreDocs;
+				Query expandedQuery = expandQuery(searcher, analyzer, queryContents, hits, reader, writer);
+				hits = searcher.search(expandedQuery, TOP_X_RESULTS).scoreDocs;
 
 				for (int i = 0; i < hits.length; i++) {
 					ScoreDoc hit = hits[i];
@@ -216,7 +216,6 @@ public class Application {
 					String topic = query.getNum();
 					writer.println(topic + ITERATION_NUM + docNo + " " + i + " " + hit.score + ITERATION_NUM);
 				}
-
 			}
 		} catch (Exception e) {
 			print("An exception occurred: " + e.getMessage());
